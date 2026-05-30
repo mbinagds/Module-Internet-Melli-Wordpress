@@ -76,13 +76,22 @@ jQuery(document).ready(function($) {
                 nonce: internetMelli.nonce,
                 enabled: $('#internet_melli_enabled').is(':checked') ? 1 : 0,
                 blocked_domains_frontend: $('#internet_melli_blocked_domains_frontend').val(),
-                blocked_domains_backend: $('#internet_melli_blocked_domains_backend').val()
+                blocked_domains_backend: $('#internet_melli_blocked_domains_backend').val(),
+                sw_guarantee: $('#internet_melli_sw_guarantee').is(':checked') ? 1 : 0
             },
             success: function(response) {
                 if (response.success) {
                     $message.addClass('show success').html(
                         '<span class="dashicons dashicons-yes-alt"></span> ' + response.data.message
                     );
+                    
+                    // Reset unsaved changes flag
+                    if (window.backendDomainManagerInstance) {
+                        window.backendDomainManagerInstance.hasUnsavedChanges = false;
+                        $('.im-unsaved-warning').slideUp(function() {
+                            $(this).remove();
+                        });
+                    }
                     
                     // Update status badge
                     if (response.data.enabled == 1) {
@@ -114,24 +123,79 @@ jQuery(document).ready(function($) {
     
 });
 
-/* ===== Domain Manager (Frontend / Backend) ===== */
+
+/* ===== Domain Manager ===== */
+
+/* === Global Alert System === */
 (function($) {
     'use strict';
+    
+    var GlobalAlertManager = {
+        $container: null,
+        isVisible: false,
+        
+        init: function() {
+            if (!$('#im-global-alert-container').length) {
+                var containerHtml = '<div id="im-global-alert-container" style="position:fixed;top:32px;right:160px;left:160px;z-index:99999;display:none;">' +
+                    '<div class="notice notice-warning im-global-alert" style="margin:0;box-shadow:0 2px 8px rgba(0,0,0,0.2);">' +
+                    '<p style="margin:8px 0;"><span class="dashicons dashicons-warning"></span> ' +
+                    '<strong id="im-global-alert-message"></strong></p>' +
+                    '</div></div>';
+                $('body').append(containerHtml);
+            }
+            this.$container = $('#im-global-alert-container');
+        },
+        
+        show: function(message) {
+            if (!this.$container) this.init();
+            $('#im-global-alert-message').text(message);
+            this.$container.slideDown();
+            this.isVisible = true;
+        },
+        
+        hide: function() {
+            if (!this.$container) return;
+            this.$container.slideUp(function() {
+                $(this).hide();
+            });
+            this.isVisible = false;
+        },
+        
+        update: function(hasChanges, message) {
+            if (hasChanges && !this.isVisible) {
+                this.show(message);
+            } else if (!hasChanges && this.isVisible) {
+                this.hide();
+            }
+        }
+    };
+    
+    window.IMGlobalAlert = GlobalAlertManager;
+    
+})(jQuery);
 
+/* ===== Domain Manager (Frontend) ===== */
+(function($) {
+    'use strict';
+    
     function DomainManager(options) {
-        this.$hiddenInput    = $(options.hiddenFieldSelector);
-        this.$input          = $(options.inputSelector);
-        this.$addBtn         = $(options.addButtonSelector);
-        this.$container      = $(options.listContainerSelector);
-
+        this.$hiddenInput = $(options.hiddenFieldSelector);
+        this.$input = $(options.inputSelector);
+        this.$addBtn = $(options.addButtonSelector);
+        this.$container = $(options.listContainerSelector);
+        this.$saveBtn = $(options.saveButtonSelector);
+        
         if (!this.$hiddenInput.length || !this.$container.length) {
             console.log('Internet Melli: Domain elements not found for selector ', options.hiddenFieldSelector);
             return;
         }
-
+        
+        this.originalDomains = [];
+        this.hasUnsavedChanges = false;
+        
         this.init();
     }
-
+    
     DomainManager.prototype.getDomains = function() {
         var val = this.$hiddenInput.val() || '';
         if (!val) return [];
@@ -139,59 +203,77 @@ jQuery(document).ready(function($) {
             .map(function(domain) { return domain.trim(); })
             .filter(function(domain) { return domain.length > 0; });
     };
-
+    
     DomainManager.prototype.saveDomains = function(domains) {
         this.$hiddenInput.val(domains.join(','));
     };
-
+    
+    DomainManager.prototype.checkForChanges = function() {
+        var currentDomains = this.getDomains();
+        var hasChanges = JSON.stringify(currentDomains) !== JSON.stringify(this.originalDomains);
+        
+        this.hasUnsavedChanges = hasChanges;
+        
+        window.IMGlobalAlert.update(
+            hasChanges,
+            '⚠️ تغییرات شما هنوز ذخیره نشده است. لطفاً روی دکمه "ذخیره" کلیک کنید.'
+        );
+    };
+    
+    DomainManager.prototype.onSave = function() {
+        this.originalDomains = this.getDomains();
+        this.hasUnsavedChanges = false;
+        window.IMGlobalAlert.hide();
+    };
+    
     DomainManager.prototype.renderDomains = function() {
         var domains = this.getDomains();
         var $container = this.$container;
-
+        
         if (domains.length === 0) {
             $container.html('<p class="im-empty-message">هنوز دامنه‌ای اضافه نشده است</p>');
             return;
         }
-
+        
         var html = '';
         html += '<div class="im-domains-header">';
         html += '<span>دامنه‌های مسدود شده</span>';
         html += '<span class="im-domains-count">' + domains.length + ' عدد</span>';
         html += '</div>';
-
         html += '<ul class="im-domains-list">';
+        
         domains.forEach(function(domain, index) {
             html += '<li class="im-domain-item" data-index="' + index + '">';
             html += '<span class="im-domain-text">' + domain + '</span>';
             html += '<button type="button" class="im-domain-remove" data-index="' + index + '">&times;</button>';
             html += '</li>';
         });
+        
         html += '</ul>';
-
         $container.html(html);
     };
-
+    
     DomainManager.prototype.init = function() {
         var self = this;
-
-        // رندر اولیه از hidden
+        
+        window.IMGlobalAlert.init();
+        this.originalDomains = this.getDomains();
         this.renderDomains();
-
-        // افزودن دامنه
+        
         this.$addBtn.on('click', function() {
             var domain = (self.$input.val() || '').trim();
             if (!domain) return;
-
+            
             var domains = self.getDomains();
             if (domains.indexOf(domain) === -1) {
                 domains.push(domain);
                 self.saveDomains(domains);
                 self.renderDomains();
+                self.checkForChanges();
             }
             self.$input.val('');
         });
-
-        // حذف دامنه
+        
         this.$container.on('click', '.im-domain-remove', function() {
             var index = parseInt($(this).data('index'), 10);
             var domains = self.getDomains();
@@ -199,47 +281,87 @@ jQuery(document).ready(function($) {
                 domains.splice(index, 1);
                 self.saveDomains(domains);
                 self.renderDomains();
+                self.checkForChanges();
+            }
+        });
+        
+        // اتصال به دکمه ذخیره
+        if (this.$saveBtn && this.$saveBtn.length) {
+            this.$saveBtn.on('click', function() {
+                self.onSave();
+            });
+        }
+        
+        $(window).on('beforeunload', function(e) {
+            if (self.hasUnsavedChanges) {
+                var message = 'تغییرات شما ذخیره نشده است. آیا مطمئن هستید؟';
+                e.returnValue = message;
+                return message;
             }
         });
     };
-
-
+    
     $(function() {
-        new DomainManager({
+        window.frontendDomainManagerInstance = new DomainManager({
             hiddenFieldSelector: '#internet_melli_blocked_domains_frontend',
             inputSelector: '#domain_input_frontend',
             addButtonSelector: '#add_domain_btn_frontend',
-            listContainerSelector: '#domains_list_frontend'
+            listContainerSelector: '#domains_list_frontend',
+            saveButtonSelector: '#internet_melli_submit' // ← دکمه ذخیره
         });
     });
-
+    
 })(jQuery);
-
 
 /* ===== Backend Domain Manager (JSON version) ===== */
 (function($) {
     'use strict';
-
+    
     function BackendDomainManager(options) {
         this.$hiddenInput = $(options.hiddenFieldSelector);
         this.$input = $(options.inputSelector);
         this.$addBtn = $(options.addButtonSelector);
         this.$list = $(options.listContainerSelector);
-
+        this.$saveBtn = $(options.saveButtonSelector);
+        
         this.domains = [];
-
-        this.load();
-        this.render();
-        this.bindEvents();
+        this.originalDomains = [];
+        this.hasUnsavedChanges = false;
+        
+        this.init();
     }
-
+    
+    BackendDomainManager.prototype.init = function() {
+        var self = this;
+        
+        this.load();
+        this.originalDomains = JSON.parse(JSON.stringify(this.domains));
+        
+        this.render();
+        this.attachEvents();
+        
+        // اتصال به دکمه ذخیره
+        if (this.$saveBtn && this.$saveBtn.length) {
+            this.$saveBtn.on('click', function() {
+                self.onSave();
+            });
+        }
+        
+        $(window).on('beforeunload', function(e) {
+            if (self.hasUnsavedChanges) {
+                var message = 'تغییرات شما ذخیره نشده است. آیا مطمئن هستید؟';
+                e.returnValue = message;
+                return message;
+            }
+        });
+    };
+    
     BackendDomainManager.prototype.load = function() {
         var raw = this.$hiddenInput.val().trim();
         if (!raw) {
             this.domains = [];
             return;
         }
-
         try {
             this.domains = JSON.parse(raw);
             if (!Array.isArray(this.domains)) this.domains = [];
@@ -248,78 +370,133 @@ jQuery(document).ready(function($) {
             this.domains = [];
         }
     };
-
+    
     BackendDomainManager.prototype.save = function() {
         this.$hiddenInput.val(JSON.stringify(this.domains));
     };
-
-    BackendDomainManager.prototype.render = function() {
-        if (!this.domains.length) {
-            this.$list.html('<p class="im-empty-message">هنوز دامنه‌ای اضافه نشده است</p>');
-            return;
-        }
-
-        var html = '<div class="im-domains-header">' +
-            '<span>دامنه‌های مسدود شده</span>' +
-            '<span class="im-domains-count">' + this.domains.length + ' عدد</span>' +
-            '</div>';
-
-        html += '<ul class="im-domains-list">';
-
-        this.domains.forEach((item, index) => {
-            html += `
-                <li class="im-domain-item" data-index="${index}">
-                    <input type="checkbox" class="im-domain-enabled" ${item.enabled ? 'checked' : ''}>
-                    <span class="im-domain-text">${item.domain}</span>
-                    <button type="button" class="im-domain-remove" data-index="${index}">×</button>
-                </li>
-            `;
-        });
-
-        html += '</ul>';
-
-        this.$list.html(html);
+    
+    BackendDomainManager.prototype.checkForChanges = function() {
+        var hasChanges = JSON.stringify(this.domains) !== JSON.stringify(this.originalDomains);
+        
+        this.hasUnsavedChanges = hasChanges;
+        
+        window.IMGlobalAlert.update(
+            hasChanges,
+            '⚠️ تغییرات شما هنوز ذخیره نشده است. لطفاً روی دکمه "ذخیره تنظیمات" کلیک کنید.'
+        );
     };
+    
+    BackendDomainManager.prototype.onSave = function() {
+        this.originalDomains = JSON.parse(JSON.stringify(this.domains));
+        this.hasUnsavedChanges = false;
+        window.IMGlobalAlert.hide();
+    };
+    
+BackendDomainManager.prototype.render = function() {
+    if (!this.domains.length) {
+        this.$list.html('<p class="im-empty-message">هنوز دامنه‌ای اضافه نشده است</p>');
+        return;
+    }
+    var html = '<div class="im-domains-header">' +
+        '<span>دامنه‌های مسدود شده</span>' +
+        '<span class="im-domains-count">' + this.domains.length + ' عدد</span>' +
+        '</div>';
+    html += '<ul class="im-domains-list">';
+    var self = this;
+    
+    this.domains.forEach(function(item, index) {
+        html += '<li class="im-domain-item" data-index="' + index + '">';
+        
+        html += '<span class="im-domain-text">' + item.domain + '</span>';
+        
+        html += '<div class="im-domain-actions">';
 
-    BackendDomainManager.prototype.bindEvents = function() {
+        
+        // Toggle
+        html += '<label class="im-toggle">';
+        html += '<input type="checkbox" class="im-domain-enabled" data-index="' + index + '"';
+        if (item.enabled) html += ' checked';
+        html += '>';
+        html += '<span class="im-toggle-slider">';
+        html += '<span class="im-toggle-text">' + (item.enabled ? 'Block' : 'Open') + '</span>';
+        html += '</span>';
+        html += '</label>';
+        
+                
+        // دکمه حذف
+        html += '<button type="button" class="im-domain-remove" data-index="' + index + '">';
+        html += '<span class="dashicons dashicons-no-alt"></span>';
+        html += '</button>';
+        
+        html += '</div>'; // end .im-domain-actions
+        
+        html += '</li>';
+    });
+    
+    html += '</ul>';
+    this.$list.html(html);
+    this.attachEvents();
+};
+// اضافه کردن event listener بعد از ساخت HTML
+$(document).on('change', '.im-domain-enabled', function() {
+    var $checkbox = $(this);
+    var $text = $checkbox.siblings('.im-toggle-slider').find('.im-toggle-text');
+    
+    if ($checkbox.is(':checked')) {
+        $text.text('Block');
+    } else {
+        $text.text('Open');
+    }
+});
+        
+    
+    BackendDomainManager.prototype.attachEvents = function() {
         var self = this;
-
+        
+        this.$addBtn.off('click');
+        this.$list.off('change', '.im-domain-enabled');
+        this.$list.off('click', '.im-domain-remove');
+        
         this.$addBtn.on('click', function() {
             var domain = self.$input.val().trim();
             if (!domain) return;
-
+            
             self.domains.push({ domain: domain, enabled: true });
             self.save();
             self.render();
-
+            self.checkForChanges();
             self.$input.val('');
         });
-
+        
         this.$list.on('change', '.im-domain-enabled', function() {
-            var index = $(this).closest('.im-domain-item').data('index');
+            var index = $(this).data('index');
             self.domains[index].enabled = this.checked;
             self.save();
+            self.checkForChanges();
         });
-
+        
         this.$list.on('click', '.im-domain-remove', function() {
             var index = $(this).data('index');
             self.domains.splice(index, 1);
             self.save();
             self.render();
+            self.checkForChanges();
         });
     };
-
+    
     $(function() {
-        new BackendDomainManager({
+        window.IMGlobalAlert.init();
+        
+        window.backendDomainManagerInstance = new BackendDomainManager({
             hiddenFieldSelector: '#internet_melli_blocked_domains_backend',
             inputSelector: '#domain_input_backend',
             addButtonSelector: '#add_domain_btn_backend',
-            listContainerSelector: '#domains_list_backend'
+            listContainerSelector: '#domains_list_backend',
+            saveButtonSelector: '#internet_melli_submit' // ← دکمه ذخیره
         });
     });
-
+    
 })(jQuery);
-
 
 
 // ===== Update Checker =====
@@ -441,8 +618,9 @@ jQuery(document).ready(function($) {
                     $imUpdateSection.slideUp();
                     
                     setTimeout(function() {
-                        alert(internetMelli.strings.reactivate_plugin);
-                    }, 500);
+   						 window.location.reload();
+									}, 500);
+
                 } else {
                     $imUpdateMessage.html(
                         '<span class="dashicons dashicons-warning"></span> ' + 
@@ -500,6 +678,65 @@ jQuery(function($) {
                     .show();
 
                 $('#internet_melli_delete_all_btn').prop('disabled', false);
+            }
+        });
+
+    });
+
+});
+
+//feedback
+jQuery(document).ready(function($) {
+
+    // فرم فیدبک
+    $('#im-feedback-form').on('submit', function(e) {
+        e.preventDefault();
+
+        var $form   = $(this);
+        var $btn    = $('#im-send-feedback-btn');
+        var $result = $('#im-feedback-result');
+        var $loading = $('#im-feedback-loading');
+
+        $result.hide().text('');
+        $loading.show();
+        $btn.prop('disabled', true);
+
+        $.ajax({
+            url: internetMelli.ajax_url,
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'im_send_feedback',
+                im_feedback_nonce: $('#im_feedback_nonce').val(),
+                text: $('#im-feedback-text').val(),
+                user: $('input[name="user"]').val()
+            },
+
+            success: function(res) {
+                $loading.hide();
+                $btn.prop('disabled', false);
+
+                if (res.success) {
+                    $result
+                        .css('color', 'green')
+                        .text(res.data.message)
+                        .show();
+                    $form[0].reset();
+                } else {
+                    $result
+                        .css('color', 'red')
+                        .text(res.data.message)
+                        .show();
+                }
+            },
+
+            error: function() {
+                $loading.hide();
+                $btn.prop('disabled', false);
+                $result
+                    .css('color', 'red')
+                    .text('خطا در ارتباط با سرور.')
+                    .show();
             }
         });
 

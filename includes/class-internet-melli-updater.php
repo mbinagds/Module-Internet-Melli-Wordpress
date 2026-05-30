@@ -9,7 +9,8 @@ if (!defined('ABSPATH')) {
 
 class Internet_Melli_Updater {
 
-    private $update_url = 'https://mirror.talashnet.ir/wordpress/internet-melli/update.json';
+    private $update_url = 'http://mirror.talashnet.ir/wordpress/internet-melli/updater/update-api.php';
+
     private $current_version;
     private $plugin_slug = 'internet-melli';
 
@@ -17,40 +18,50 @@ class Internet_Melli_Updater {
         $this->current_version = $current_version;
     }
 
-    public function check_for_update() {
-        $response = wp_remote_get($this->update_url, array(
-            'timeout'   => 15,
-            'sslverify' => false
-        ));
+   public function check_for_update() {
+    // ارسال اطلاعات سایت به API
+    $query_params = http_build_query([
+        'site_url' => get_site_url(),
+        'version' => $this->current_version,
+        'slug' => $this->plugin_slug
+    ]);
+    
+    $api_url = $this->update_url . '?' . $query_params;
+    
+    $response = wp_remote_get($api_url, array(
+        'timeout'   => 15,
+        'sslverify' => false
+    ));
 
-        if (is_wp_error($response)) {
-            return array(
-                'status'  => 'error',
-                'message' => __('خطا در اتصال به سرور: ', 'internet-melli') . $response->get_error_message()
-            );
-        }
-
-        $body = wp_remote_retrieve_body($response);
-        $data = json_decode($body, true);
-
-        if (!$data || !isset($data['version'])) {
-            return array(
-                'status'  => 'error',
-                'message' => __('پاسخ نامعتبر از سرور', 'internet-melli')
-            );
-        }
-
-        $has_update = version_compare($data['version'], $this->current_version, '>');
-
+    if (is_wp_error($response)) {
         return array(
-            'status'         => 'success',
-            'has_update'     => $has_update,
-            'new_version'    => $data['version'],
-            'download_url'   => $data['download_url'] ?? '',
-            'release_notes'  => $data['release_notes'] ?? '',
-            'current_version'=> $this->current_version
+            'status'  => 'error',
+            'message' => __('خطا در اتصال به سرور: ', 'internet-melli') . $response->get_error_message()
         );
     }
+
+    $body = wp_remote_retrieve_body($response);
+    $data = json_decode($body, true);
+
+    if (!$data || !isset($data['version'])) {
+        return array(
+            'status'  => 'error',
+            'message' => __('پاسخ نامعتبر از سرور', 'internet-melli')
+        );
+    }
+
+    $has_update = version_compare($data['version'], $this->current_version, '>');
+
+    return array(
+        'status'         => 'success',
+        'has_update'     => $has_update,
+        'new_version'    => $data['version'],
+        'download_url'   => $data['download_url'] ?? '',
+        'release_notes'  => $data['release_notes'] ?? '',
+        'current_version'=> $this->current_version
+    );
+}
+
 
     public function download_and_install($download_url) {
         if (!current_user_can('install_plugins')) {

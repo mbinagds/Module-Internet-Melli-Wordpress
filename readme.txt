@@ -3,7 +3,7 @@ Contributors: Talashnet
 Tags: block, foreign sites, national internet, speed, performance
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.2
+Stable tag: 1.3.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,6 +29,14 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 4. افزونه را فعال کنید
 
 == Changelog ==
+
+= 1.3 =
+* UX
+* Improvement of frontend blockage
+* some bug fix
+* sw.js set from two methods
+
+
 
 = 1.2 =
 * کنترلر بهتر

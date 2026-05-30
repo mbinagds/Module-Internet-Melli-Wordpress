@@ -3,7 +3,7 @@
  * Plugin Name:       مسدودکننده سایت‌های خارجی (Internet Melli)
  * Plugin URI:        https://talashnet.com
  * Description:       مسدود کردن درخواست‌های سایت‌های خارجی که در اینترنت ملی کندی ایجاد می‌کنند با استفاده از ریکوئستور
- * Version:           1.2.1
+ * Version:           1.3.6
  * Author:            تلاش نت
  * Author URI:        https://talashnet.com
  * License:           GPL-2.0+
@@ -21,6 +21,8 @@ define('INTERNET_MELLI_URL', plugin_dir_url(__FILE__));
 require_once INTERNET_MELLI_PATH . 'includes/class-internet-melli-admin.php';
 require_once INTERNET_MELLI_PATH . 'includes/class-internet-melli-updater.php';
 require_once INTERNET_MELLI_PATH . 'includes/class-internet-melli-blocker.php';
+require_once INTERNET_MELLI_PATH . 'includes/class-internet-melli-remover.php';
+
 
 
 class Internet_Melli {
@@ -45,6 +47,8 @@ class Internet_Melli {
 
         add_action('wp_enqueue_scripts', [$this, 'enqueue_frontend_scripts']);
         add_action('wp_head', array($this, 'add_sw_to_head'), 1);
+        add_action('wp_ajax_im_send_feedback', array($this, 'im_send_feedback'));
+        add_action('wp_ajax_nopriv_im_send_feedback', array($this, 'im_send_feedback'));
 
 
         // سرو فایل SW
@@ -64,6 +68,10 @@ class Internet_Melli {
         if ( class_exists( 'Internet_Melli_Blocker' ) ) {
             Internet_Melli_Blocker::init();
         }
+        if ( class_exists( 'Internet_Melli_Remover' ) ) {
+            Internet_Melli_Remover::init();
+        }
+
     }
 
     public function init() {
@@ -73,6 +81,58 @@ class Internet_Melli {
     public function enqueue_frontend_scripts() {
 
     }
+    
+    //feedback
+public function im_send_feedback() {
+
+    // بررسی nonce
+    if (
+        !isset($_POST['im_feedback_nonce']) ||
+        !wp_verify_nonce($_POST['im_feedback_nonce'], 'internet_melli_nonce')
+    ) {
+        wp_send_json_error(array('message' => 'اعتبارسنجی ناموفق بود.'));
+    }
+
+    $text = isset($_POST['text']) ? sanitize_textarea_field($_POST['text']) : '';
+    $user = isset($_POST['user']) ? sanitize_text_field($_POST['user']) : '';
+
+    if (empty($text)) {
+        wp_send_json_error(array('message' => 'متن فیدبک خالی است.'));
+    }
+
+    // داده‌ها برای ارسال
+    $payload = array(
+        'user' => $user,
+        'text' => $text,
+        'time' => current_time('mysql')
+    );
+
+    // درخواست به سرور خارجی
+    $response = wp_remote_post(
+        'http://mirror.talashnet.ir/wordpress/internet-melli/feedback/get.php',
+        array(
+            'timeout' => 15,
+            'body'    => $payload
+        )
+    );
+
+    if (is_wp_error($response)) {
+        wp_send_json_error(array('message' => 'ارتباط با سرور خارجی برقرار نشد.'));
+    }
+
+    $status = wp_remote_retrieve_response_code($response);
+
+    if ($status >= 200 && $status < 300) {
+        wp_send_json_success(array('message' => 'فیدبک با موفقیت ارسال شد.'));
+    } else {
+        wp_send_json_error(array(
+            'message' => 'ارسال به سرور خارجی ناموفق بود. (' . $status . ')'
+        ));
+    }
+}
+
+
+    //
     
     public function add_sw_to_head() {
         $enabled = (int) get_option('internet_melli_enabled', 0);
@@ -139,21 +199,20 @@ class Internet_Melli {
         <?php
     }
 
-public function serve_sw_js() {
-    // چک کردن درخواست requester
-    if (isset($_GET['sw']) && $_GET['sw'] === 'internet-melli') {
-        $blocked_domains = get_option('internet_melli_blocked_domains_frontend', 'gravatar.com,googleapis.com,fonts.googleapis.com,google,cdnjs,cloudflare,microsoft,clarity,fontawesome.com,ps.w.org');
-        $domains_array = array_map('trim', explode(',', $blocked_domains));
-        $domains_json = json_encode($domains_array);
-        $version = INTERNET_MELLI_VERSION;
-        
-        // Headers مناسب
-        header('Content-Type: application/javascript; charset=utf-8');
-        //header('Cache-Control: no-cache, no-store, must-revalidate');
-        //header('Pragma: no-cache');
-        //header('Expires: 0');
-        
-        echo "
+
+    public static function generate_sw_content() {
+
+    $blocked_domains = get_option(
+        'internet_melli_blocked_domains_frontend',
+        'gravatar.com,googleapis.com,unpkg.com,github,fonts.googleapis.com,google,cdnjs,cloudflare,microsoft,clarity,fontawesome.com,ps.w.org'
+    );
+
+    $domains_array = array_map('trim', explode(',', $blocked_domains));
+    $domains_json = json_encode($domains_array);
+
+    $version = INTERNET_MELLI_VERSION;
+
+return "
 const blocked = {$domains_json};
 const SW_VERSION = '{$version}';
 
@@ -166,25 +225,33 @@ self.addEventListener('activate', (event) => {
     event.waitUntil(
         clients.claim().then(() => {
             console.log('Internet Melli SW v' + SW_VERSION + ' activated');
-            return self.registration.update();
         })
     );
 });
 
 self.addEventListener('fetch', function(event) {
     const url = event.request.url;
-    //console.log('SW Intercepted:', url);
-    
-    for (let b of blocked) {        
-        if (url.includes(b)) {            
-            console.log('❌ Blocked:', b);            
-            event.respondWith(new Response('', {status: 403}));            
-            return;        
-        }    
+
+    for (let b of blocked) {
+        if (url.includes(b)) {
+            event.respondWith(new Response('', {status: 403}));
+            return;
+        }
     }
 });
-
 ";
+    }
+
+public function serve_sw_js() {
+    // چک کردن درخواست requester
+    if (isset($_GET['sw']) && $_GET['sw'] === 'internet-melli') {
+
+        header('Content-Type: application/javascript; charset=utf-8');
+        //header('Cache-Control: no-cache, no-store, must-revalidate');
+        //header('Pragma: no-cache');
+        //header('Expires: 0');
+        //echo $this->generate_sw_content(); //NonStatic
+        echo self::generate_sw_content();
         
         exit;
     }
@@ -199,6 +266,9 @@ self.addEventListener('fetch', function(event) {
         flush_rewrite_rules();
     }
 }
+
+
+
 
 // ==========================================
 // AJAX Handlers for Plugin Update
@@ -293,10 +363,20 @@ function ajax_delete_all_data() {
     // اگر قبلاً گزینه قدیمی وجود داشته است:
     delete_option('internet_melli_blocked_domains');
 
+
+    $sw_file = ABSPATH . 'sw.js';
+    if (file_exists($sw_file)) {
+        unlink($sw_file);
+    }
+    delete_option('internet_melli_sw_guarantee');
+
+
     wp_send_json_success([
         'message' => __('تمام اطلاعات پلاگین با موفقیت حذف شد.', 'internet-melli')
     ]);
 }
+
+
 
 
 Internet_Melli::get_instance();

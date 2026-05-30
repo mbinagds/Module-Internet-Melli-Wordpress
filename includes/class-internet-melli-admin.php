@@ -50,7 +50,7 @@ class Internet_Melli_Admin {
             array(
                 'type' => 'string',
                 'sanitize_callback' => 'sanitize_textarea_field',
-                'default' => 'gravatar.com,googleapis.com,fonts.googleapis.com,google,cdnjs,cloudflare,microsoft,clarity,fontawesome.com,ps.w.org'
+                'default' => 'gravatar.com,googleapis.com,unpkg.com,github,fonts.googleapis.com,google,cdnjs,cloudflare,microsoft,clarity,fontawesome.com,ps.w.org'
             )
         );
 
@@ -60,7 +60,7 @@ class Internet_Melli_Admin {
             array(
                 'type' => 'string',
                 'sanitize_callback' => 'sanitize_textarea_field',
-                'default' => 'gravatar.com,googleapis.com,fonts.googleapis.com,google,cdnjs,cloudflare,microsoft,clarity,fontawesome.com,ps.w.org'
+                'default' => 'gravatar.com,googleapis.com,unpkg.com,github,fonts.googleapis.com,google,cdnjs,cloudflare,microsoft,clarity,fontawesome.com,ps.w.org'
             )
         );
 
@@ -73,6 +73,16 @@ class Internet_Melli_Admin {
                 'default' => '1.2'
             )
         );
+
+        register_setting(
+            'internet_melli_settings',
+            'internet_melli_sw_guarantee',
+            array(
+                'type' => 'integer',
+                'sanitize_callback' => 'absint',
+                'default' => 0
+            )
+        );
     }
 
     /**
@@ -80,10 +90,12 @@ class Internet_Melli_Admin {
      */
     public function render_admin_page() {
         $enabled = get_option('internet_melli_enabled', 0);
+        $sw_guarantee = get_option('internet_melli_sw_guarantee', 0);
+
 
 $blocked_domains_frontend = get_option(
     'internet_melli_blocked_domains_frontend',
-    'gravatar.com,googleapis.com,fonts.googleapis.com,google,cdnjs,cloudflare,microsoft,clarity,fontawesome.com,ps.w.org'
+    'gravatar.com,googleapis.com,unpkg.com,github,fonts.googleapis.com,google,cdnjs,cloudflare,microsoft,clarity,fontawesome.com,ps.w.org'
 );
 
 $blocked_domains_backend = get_option(
@@ -138,6 +150,29 @@ $blocked_domains_backend = get_option(
                                     </div>
                                 </div>
                             </div>
+                            <div class="im-form-group">
+                                <div class="im-form-row">
+                                    <div class="im-form-label">
+                                        <label for="internet_melli_sw_guarantee">
+                                            <?php echo esc_html__('تضمین ریکوئستر', 'internet-melli'); ?>
+                                        </label>
+                                        <p class="im-description">
+                                            <?php echo esc_html__('در برخی سایت‌ها ممکن است آدرس sw.js به درستی مسیردهی نشود و خطای 404 بدهد. با فعال کردن این گزینه یک فایل sw.js در روت وردپرس ساخته می‌شود تا همیشه در دسترس باشد.', 'internet-melli'); ?>
+                                        </p>
+                                    </div>
+                                    <div class="im-form-control">
+                                        <label class="im-switch">
+                                            <input type="checkbox"
+                                                id="internet_melli_sw_guarantee"
+                                                name="internet_melli_sw_guarantee"
+                                                value="1"
+                                                <?php checked($sw_guarantee, 1); ?>>
+                                            <span class="im-slider im-round"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
 
                             <div class="im-form-group">
                                 <div class="im-form-row">
@@ -146,14 +181,16 @@ $blocked_domains_backend = get_option(
         <?php echo esc_html__('لیست دامنه‌های مسدود شده', 'internet-melli'); ?>
     </label>
     <p class="im-description">
-        <?php echo esc_html__('دامنه‌های مسدود شده را به صورت جداگانه برای فرانت‌اند و بک‌اند تنظیم کنید.', 'internet-melli'); ?>
+        <?php echo esc_html__('دامنه‌های خارج ایران را به صورت جداگانه برای فرانت‌اند و بک‌اند تنظیم کنید.
+         تنظیم صحیح دامنه های بک اند خارجی باعث بهبود سرعت پیشخوان شما و کاربر بازدید کننده سایت میشوند.
+          کنترل دامنه های فرانت اند باعث بهبود سرعت نمایش برای کاربر بازدید کننده سایت میشود.', 'internet-melli'); ?>
     </p>
 
     <div class="im-domain-columns" style="display: flex; gap: 20px; margin-top: 15px;">
 
         <!-- ستون چپ: لیست دامنه‌های مسدود شده بک‌اند -->
         <div class="im-domain-column" style="flex: 1;">
-            <h4 style="margin-top:0;"><?php echo esc_html__('لیست دامنه‌های مسدود شده بک‌اند', 'internet-melli'); ?></h4>
+            <h4 style="margin-top:0;"><?php echo esc_html__('لیست دامنه‌های شناسایی شده بک‌اند', 'internet-melli'); ?></h4>
 
             <div class="im-domain-input-wrapper">
                 <div class="im-domain-input-group">
@@ -368,41 +405,61 @@ $backend_domains = get_option( 'internet_melli_blocked_domains_backend', '' );
 <!-- feedback Card -->
 <div class="im-card im-card-feedback">
     <div class="im-card-header im-card-header-feedback">
-        <h3><span class="dashicons dashicons-feedback"></span> <?php echo esc_html__('ارسال فیدبک', 'internet-melli'); ?></h3>
+        <h3>
+            <span class="dashicons dashicons-feedback"></span>
+            <?php echo esc_html__('ارسال فیدبک', 'internet-melli'); ?>
+        </h3>
     </div>
+
     <div class="im-card-body">
-        <form id="im-feedback-form" 
-              method="post" 
-              action="http://mirror.talashnet.ir/wordpress/internet-melli/feedback/get.php">
-            
-            <!-- دامنه به صورت مخفی -->
-            <input type="hidden" 
-                   name="user" 
+        
+        <form id="im-feedback-form" method="post">
+
+            <!-- نانس هماهنگ با wp_localize_script -->
+            <input type="hidden"
+                   id="im_feedback_nonce"
+                   name="im_feedback_nonce"
+                   value="<?php echo wp_create_nonce('internet_melli_nonce'); ?>">
+
+            <input type="hidden"
+                   name="user"
                    value="<?php echo esc_attr($_SERVER['HTTP_HOST']); ?>">
-            
+
             <div class="im-feedback-field">
-                <label for="im-feedback-text"><?php echo esc_html__('منتظر نظراتتون هستیم 💬', 'internet-melli'); ?></label>
-                <textarea id="im-feedback-text" 
-                          name="text" 
-                          rows="4" 
-                          class="im-feedback-textarea" 
+                <label for="im-feedback-text">
+                    <?php echo esc_html__('منتظر نظراتتون هستیم 💬', 'internet-melli'); ?>
+                </label>
+
+                <textarea id="im-feedback-text"
+                          name="text"
+                          rows="4"
+                          class="im-feedback-textarea"
                           placeholder="<?php echo esc_attr__('لطفاً پیام خود را بنویسید...', 'internet-melli'); ?>"
                           required></textarea>
             </div>
-            <button type="submit" id="im-send-feedback-btn" class="im-btn im-btn-primary im-btn-block">
+
+            <button type="submit"
+                    id="im-send-feedback-btn"
+                    class="im-btn im-btn-primary im-btn-block">
                 <span class="dashicons dashicons-send"></span>
-                <?php echo esc_html__('ارسال ', 'internet-melli'); ?>
+                <?php echo esc_html__('ارسال', 'internet-melli'); ?>
             </button>
+
         </form>
-        
+
         <div id="im-feedback-result" class="im-feedback-result"></div>
-        
-        <div id="im-feedback-loading" class="im-feedback-loading" style="display: none;">
+
+        <div id="im-feedback-loading"
+             class="im-feedback-loading"
+             style="display: none;">
             <div class="im-feedback-spinner"></div>
             <span><?php echo esc_html__('در حال ارسال...', 'internet-melli'); ?></span>
         </div>
+
     </div>
 </div>
+
+
                     <!-- Contact Card -->
                     <div class="im-card im-card-contact">
                         <div class="im-card-header im-card-header-contact">
@@ -418,7 +475,7 @@ $backend_domains = get_option( 'internet_melli_blocked_domains_backend', '' );
                             </div>
                             <div class="im-contact-links">
                                 <a href="https://talashnet.com" target="_blank" class="im-contact-link">
-                                    <span class="dashicons dashicons-globe"></span>
+                                    <span class="dashicons dashicons-admin-site"></span>
                                     <?php echo esc_html__('وب سایت', 'internet-melli'); ?>
                                 </a>
                                 <a href="mailto:info@talashnet.com" class="im-contact-link">
@@ -431,6 +488,9 @@ $backend_domains = get_option( 'internet_melli_blocked_domains_backend', '' );
                                 </a>
                             </div>
                             <div class="im-social-links">
+                                <a href="https://ble.ir/talashnet" target="_blank" class="im-social-btn" title="پیام رسان بله">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg" class="Hz484Q"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.69592 13.3899C7.05115 13.3899 6.52734 12.8661 6.52734 12.2214C6.52734 11.5785 7.05115 11.0547 7.69592 11.0547C8.34068 11.0547 8.86449 11.5785 8.86449 12.2214C8.86449 12.8661 8.34068 13.3899 7.69592 13.3899ZM12.2388 13.3899C11.594 13.3899 11.0702 12.8661 11.0702 12.2214C11.0702 11.5785 11.594 11.0547 12.2388 11.0547C12.8835 11.0547 13.4073 11.5785 13.4073 12.2214C13.4073 12.8661 12.8835 13.3899 12.2388 13.3899ZM15.6132 12.2214C15.6132 12.8661 16.137 13.3899 16.7817 13.3899C17.4265 13.3899 17.9503 12.8661 17.9503 12.2214C17.9503 11.5785 17.4265 11.0547 16.7817 11.0547C16.137 11.0547 15.6132 11.5785 15.6132 12.2214Z" fill="#00B894"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M12.02 2C6.21 2 2 6.74612 2 12.015C2 13.6975 2.49 15.4291 3.35 17.0115C3.51 17.2729 3.53 17.6024 3.42 17.9139L2.75 20.1572C2.6 20.698 3.06 21.0976 3.57 20.9374L5.59 20.3375C6.14 20.1572 6.57 20.3866 7.08 20.698C8.54 21.5583 10.36 22 12 22C16.96 22 22 18.1642 22 11.985C22 6.65598 17.7 2 12.02 2Z" stroke="#00B894" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                                </a>
                                 <a href="https://t.me/talashnet" target="_blank" class="im-social-btn" title="تلگرام">
                                     <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
                                 </a>
@@ -509,8 +569,8 @@ $backend_domains = get_option( 'internet_melli_blocked_domains_backend', '' );
             'no_update'       => __('شما از آخرین نسخه استفاده می‌کنید', 'internet-melli'),
             'release_notes'   => __('تغییرات:', 'internet-melli'),
             'updating'        => __('در حال آپدیت...', 'internet-melli'),
-            'no_download_url' => __('لینک دانلود یافت نشد', 'internet-melli'),
-            'reactivate_plugin' => __('لطفاً افزونه را غیرفعال و مجدداً فعال کنید.', 'internet-melli')
+            'no_download_url' => __('لینک دانلود یافت نشد', 'internet-melli')
+
         )
     )
 );
@@ -525,6 +585,10 @@ $backend_domains = get_option( 'internet_melli_blocked_domains_backend', '' );
         if (!current_user_can('manage_options')) {
             wp_send_json_error(array('message' => __('دسترسی غیرمجاز', 'internet-melli')));
         }
+
+        $sw_guarantee = isset($_POST['sw_guarantee']) ? intval($_POST['sw_guarantee']) : 0;
+        update_option('internet_melli_sw_guarantee', $sw_guarantee);
+
 
 $enabled = isset($_POST['enabled']) ? intval($_POST['enabled']) : 0;
 
@@ -545,6 +609,75 @@ if ( isset($_POST['blocked_domains_backend']) ) {
     update_option( 'internet_melli_blocked_domains_backend', $backend_domains );
 }
 
+
+$sw_file = ABSPATH . 'sw.js';
+
+if ($sw_guarantee) {
+
+    if ( class_exists('Internet_Melli') && method_exists('Internet_Melli', 'generate_sw_content') ) {
+
+        $sw_content = Internet_Melli::generate_sw_content();
+        $written = false;
+
+        // ✅ روش اول: file_put_contents
+        if ( is_writable(ABSPATH) || ( file_exists($sw_file) && is_writable($sw_file) ) ) {
+            $result = @file_put_contents($sw_file, $sw_content);
+            if ($result !== false) {
+                $written = true;
+            }
+        }
+
+        // ✅ اگر روش اول شکست خورد → WP Filesystem
+        if ( ! $written ) {
+
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+
+            $creds = request_filesystem_credentials('', '', false, false, null);
+
+            if ( WP_Filesystem($creds) ) {
+                global $wp_filesystem;
+
+                if ( $wp_filesystem->put_contents($sw_file, $sw_content, FS_CHMOD_FILE) ) {
+                    $written = true;
+                }
+            }
+        }
+
+        // ✅ اگر هر دو روش شکست خورد
+        if ( ! $written ) {
+            wp_send_json_error(array(
+                'message' => 'امکان ایجاد فایل sw.js وجود ندارد. دسترسی نوشتن روی روت وردپرس بررسی شود.'
+            ));
+        }
+    }
+
+} else {
+
+    $deleted = false;
+
+    // ✅ حذف با روش معمولی
+    if ( file_exists($sw_file) ) {
+        if ( @unlink($sw_file) ) {
+            $deleted = true;
+        }
+    }
+
+    // ✅ اگر حذف معمولی نشد → WP Filesystem
+    if ( ! $deleted && file_exists($sw_file) ) {
+
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+
+        $creds = request_filesystem_credentials('', '', false, false, null);
+
+        if ( WP_Filesystem($creds) ) {
+            global $wp_filesystem;
+
+            if ( $wp_filesystem->delete($sw_file) ) {
+                $deleted = true;
+            }
+        }
+    }
+}
 
 
 

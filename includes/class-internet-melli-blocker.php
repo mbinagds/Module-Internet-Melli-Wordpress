@@ -79,8 +79,6 @@ class Internet_Melli_Blocker {
 
         $site_host = parse_url( home_url(), PHP_URL_HOST );
         $whitelist = array(
-            'rtl-theme.ir',
-            'zhaket.ir',
             'talashnet.com',
             'mirror.talashnet.ir',
             $site_host,
@@ -130,8 +128,6 @@ class Internet_Melli_Blocker {
 
         $site_host = parse_url( home_url(), PHP_URL_HOST );
         $whitelist = array(
-            'rtl-theme.ir',
-            'zhaket.ir',
             'talashnet.com',
             'mirror.talashnet.ir',
             $site_host,
