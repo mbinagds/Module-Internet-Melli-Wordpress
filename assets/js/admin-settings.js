@@ -1,0 +1,508 @@
+jQuery(document).ready(function($) {
+    // Test Requestor Button
+    $('#internet-melli-test-btn').on('click', function() {
+        var $btn = $(this);
+        var $result = $('#internet-melli-test-result');
+        
+        $btn.prop('disabled', true).html('<span class="im-spinner"></span> ' + internetMelli.strings.testing);
+        $result.removeClass('success error warning').hide();
+        
+        // بررسی ریکوئستر در مرورگر کاربر
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                var isRegistered = false;
+                var swScope = null;
+                
+                for (var registration of registrations) {
+                    // بررسی registration ما
+                    if (registration.active && registration.active.scriptURL) {
+                        var scriptUrl = registration.active.scriptURL;
+                        // بررسی URL ریکوئستر
+                        if (scriptUrl.includes('sw.js') || scriptUrl.includes('internet-melli') || scriptUrl.includes('?sw=')) {
+                            isRegistered = true;
+                            swScope = registration.scope;
+                            break;
+                        }
+                    }
+                }
+                
+                if (isRegistered) {
+                    // ریکوئستر فعال است - سبز
+                    $result.addClass('success').html(
+                        '<span class="dashicons dashicons-yes-alt"></span> ' + internetMelli.strings.test_success
+                    ).show();
+                } else {
+                    // ریکوئستر رجیستر نشده - نارنجی
+                    $result.addClass('warning').html(
+                        '<span class="dashicons dashicons-warning"></span> ' + internetMelli.strings.test_inactive
+                    ).show();
+                }
+                
+                $btn.prop('disabled', false).html('<span class="dashicons dashicons-yes-alt"></span> ' + internetMelli.strings.testsw);
+            }).catch(function(error) {
+                console.error('SW Check Error:', error);
+                $result.addClass('error').html(
+                    '<span class="dashicons dashicons-dismiss"></span> خطا در بررسی ریکوئستر'
+                ).show();
+                $btn.prop('disabled', false);
+            });
+        } else {
+            // مرورگر پشتیبانی نمی‌کند
+            $result.addClass('error').html(
+                '<span class="dashicons dashicons-dismiss"></span> مرورگر شما از Requester پشتیبانی نمی‌کند'
+            ).show();
+            $btn.prop('disabled', false);
+        }
+    });
+
+    // Save Settings Form
+    $('#internet-melli-form').on('submit', function(e) {
+        e.preventDefault();
+        
+        var $form = $(this);
+        var $btn = $form.find('input[type="submit"]');
+        var $message = $('#internet-melli-message');
+        var $indicator = $('.im-saving-indicator');
+        
+        $btn.prop('disabled', true);
+        $indicator.show();
+        $message.removeClass('show success error warning');
+        
+        $.ajax({
+            url: internetMelli.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'internet_melli_toggle',
+                nonce: internetMelli.nonce,
+                enabled: $('#internet_melli_enabled').is(':checked') ? 1 : 0,
+                blocked_domains_frontend: $('#internet_melli_blocked_domains_frontend').val(),
+                blocked_domains_backend: $('#internet_melli_blocked_domains_backend').val()
+            },
+            success: function(response) {
+                if (response.success) {
+                    $message.addClass('show success').html(
+                        '<span class="dashicons dashicons-yes-alt"></span> ' + response.data.message
+                    );
+                    
+                    // Update status badge
+                    if (response.data.enabled == 1) {
+                        $('.im-badge').removeClass('im-badge-inactive').addClass('im-badge-active').text('فعال');
+                        $('.im-info-activity').text('فعال');
+                        $('.im-status-dot').removeClass('im-status-inactive').addClass('im-status-active');
+                    } else {
+                        $('.im-badge').removeClass('im-badge-active').addClass('im-badge-inactive').text('غیرفعال');
+                        $('.im-info-activity').text('غیرفعال');
+                        $('.im-status-dot').removeClass('im-status-active').addClass('im-status-inactive');
+                    }
+                } else {
+                    $message.addClass('show error').html(
+                        '<span class="dashicons dashicons-dismiss"></span> ' + response.data.message
+                    );
+                }
+            },
+            error: function() {
+                $message.addClass('show error').html(
+                    '<span class="dashicons dashicons-dismiss"></span> ' + internetMelli.strings.error
+                );
+            },
+            complete: function() {
+                $btn.prop('disabled', false);
+                $indicator.hide();
+            }
+        });
+    });
+    
+});
+
+/* ===== Domain Manager (Frontend / Backend) ===== */
+(function($) {
+    'use strict';
+
+    function DomainManager(options) {
+        this.$hiddenInput    = $(options.hiddenFieldSelector);
+        this.$input          = $(options.inputSelector);
+        this.$addBtn         = $(options.addButtonSelector);
+        this.$container      = $(options.listContainerSelector);
+
+        if (!this.$hiddenInput.length || !this.$container.length) {
+            console.log('Internet Melli: Domain elements not found for selector ', options.hiddenFieldSelector);
+            return;
+        }
+
+        this.init();
+    }
+
+    DomainManager.prototype.getDomains = function() {
+        var val = this.$hiddenInput.val() || '';
+        if (!val) return [];
+        return val.split(',')
+            .map(function(domain) { return domain.trim(); })
+            .filter(function(domain) { return domain.length > 0; });
+    };
+
+    DomainManager.prototype.saveDomains = function(domains) {
+        this.$hiddenInput.val(domains.join(','));
+    };
+
+    DomainManager.prototype.renderDomains = function() {
+        var domains = this.getDomains();
+        var $container = this.$container;
+
+        if (domains.length === 0) {
+            $container.html('<p class="im-empty-message">هنوز دامنه‌ای اضافه نشده است</p>');
+            return;
+        }
+
+        var html = '';
+        html += '<div class="im-domains-header">';
+        html += '<span>دامنه‌های مسدود شده</span>';
+        html += '<span class="im-domains-count">' + domains.length + ' عدد</span>';
+        html += '</div>';
+
+        html += '<ul class="im-domains-list">';
+        domains.forEach(function(domain, index) {
+            html += '<li class="im-domain-item" data-index="' + index + '">';
+            html += '<span class="im-domain-text">' + domain + '</span>';
+            html += '<button type="button" class="im-domain-remove" data-index="' + index + '">&times;</button>';
+            html += '</li>';
+        });
+        html += '</ul>';
+
+        $container.html(html);
+    };
+
+    DomainManager.prototype.init = function() {
+        var self = this;
+
+        // رندر اولیه از hidden
+        this.renderDomains();
+
+        // افزودن دامنه
+        this.$addBtn.on('click', function() {
+            var domain = (self.$input.val() || '').trim();
+            if (!domain) return;
+
+            var domains = self.getDomains();
+            if (domains.indexOf(domain) === -1) {
+                domains.push(domain);
+                self.saveDomains(domains);
+                self.renderDomains();
+            }
+            self.$input.val('');
+        });
+
+        // حذف دامنه
+        this.$container.on('click', '.im-domain-remove', function() {
+            var index = parseInt($(this).data('index'), 10);
+            var domains = self.getDomains();
+            if (index >= 0 && index < domains.length) {
+                domains.splice(index, 1);
+                self.saveDomains(domains);
+                self.renderDomains();
+            }
+        });
+    };
+
+
+    $(function() {
+        new DomainManager({
+            hiddenFieldSelector: '#internet_melli_blocked_domains_frontend',
+            inputSelector: '#domain_input_frontend',
+            addButtonSelector: '#add_domain_btn_frontend',
+            listContainerSelector: '#domains_list_frontend'
+        });
+    });
+
+})(jQuery);
+
+
+/* ===== Backend Domain Manager (JSON version) ===== */
+(function($) {
+    'use strict';
+
+    function BackendDomainManager(options) {
+        this.$hiddenInput = $(options.hiddenFieldSelector);
+        this.$input = $(options.inputSelector);
+        this.$addBtn = $(options.addButtonSelector);
+        this.$list = $(options.listContainerSelector);
+
+        this.domains = [];
+
+        this.load();
+        this.render();
+        this.bindEvents();
+    }
+
+    BackendDomainManager.prototype.load = function() {
+        var raw = this.$hiddenInput.val().trim();
+        if (!raw) {
+            this.domains = [];
+            return;
+        }
+
+        try {
+            this.domains = JSON.parse(raw);
+            if (!Array.isArray(this.domains)) this.domains = [];
+        } catch (e) {
+            console.error("BackendDomainManager JSON parse error:", e, raw);
+            this.domains = [];
+        }
+    };
+
+    BackendDomainManager.prototype.save = function() {
+        this.$hiddenInput.val(JSON.stringify(this.domains));
+    };
+
+    BackendDomainManager.prototype.render = function() {
+        if (!this.domains.length) {
+            this.$list.html('<p class="im-empty-message">هنوز دامنه‌ای اضافه نشده است</p>');
+            return;
+        }
+
+        var html = '<div class="im-domains-header">' +
+            '<span>دامنه‌های مسدود شده</span>' +
+            '<span class="im-domains-count">' + this.domains.length + ' عدد</span>' +
+            '</div>';
+
+        html += '<ul class="im-domains-list">';
+
+        this.domains.forEach((item, index) => {
+            html += `
+                <li class="im-domain-item" data-index="${index}">
+                    <input type="checkbox" class="im-domain-enabled" ${item.enabled ? 'checked' : ''}>
+                    <span class="im-domain-text">${item.domain}</span>
+                    <button type="button" class="im-domain-remove" data-index="${index}">×</button>
+                </li>
+            `;
+        });
+
+        html += '</ul>';
+
+        this.$list.html(html);
+    };
+
+    BackendDomainManager.prototype.bindEvents = function() {
+        var self = this;
+
+        this.$addBtn.on('click', function() {
+            var domain = self.$input.val().trim();
+            if (!domain) return;
+
+            self.domains.push({ domain: domain, enabled: true });
+            self.save();
+            self.render();
+
+            self.$input.val('');
+        });
+
+        this.$list.on('change', '.im-domain-enabled', function() {
+            var index = $(this).closest('.im-domain-item').data('index');
+            self.domains[index].enabled = this.checked;
+            self.save();
+        });
+
+        this.$list.on('click', '.im-domain-remove', function() {
+            var index = $(this).data('index');
+            self.domains.splice(index, 1);
+            self.save();
+            self.render();
+        });
+    };
+
+    $(function() {
+        new BackendDomainManager({
+            hiddenFieldSelector: '#internet_melli_blocked_domains_backend',
+            inputSelector: '#domain_input_backend',
+            addButtonSelector: '#add_domain_btn_backend',
+            listContainerSelector: '#domains_list_backend'
+        });
+    });
+
+})(jQuery);
+
+
+
+// ===== Update Checker =====
+(function($) {
+    'use strict';
+    
+    var $imCheckBtn = $('#im-check-update-btn');
+    var $imInstallBtn = $('#im-install-update-btn');
+    var $imCheckResult = $('#im-check-result');
+    var $imUpdateSection = $('#im-update-section');
+    var $imUpdateLoading = $('#im-update-loading');
+    var $imUpdateLoadingText = $('#im-update-loading-text');
+    var $imUpdateMessage = $('#im-update-message');
+    var $imNewVersionDisplay = $('#im-new-version-display');
+    var $imReleaseNotes = $('#im-release-notes');
+
+    var cachedUpdateData = null;
+
+    // چک کردن آپدیت
+    $imCheckBtn.on('click', function() {
+        checkForUpdate();
+    });
+
+    // نصب آپدیت
+    $imInstallBtn.on('click', function() {
+        if (confirm(internetMelli.strings.update_confirm)) {
+            installUpdate();
+        }
+    });
+
+    function checkForUpdate() {
+        // افزودن حالت لودینگ به دکمه
+        $imCheckBtn.prop('disabled', true).addClass('updating');
+        $imCheckBtn.html('<span class="im-btn-spinner"></span> ' + internetMelli.strings.checking);
+        
+        $imCheckResult.removeClass('show error success');
+        $imUpdateSection.hide();
+        $imUpdateMessage.removeClass('show');
+
+        $.ajax({
+            url: internetMelli.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'check_plugin_update',
+                nonce: internetMelli.nonce
+            },
+            success: function(response) {
+                cachedUpdateData = response;
+                
+                if (response.status === 'success') {
+                    if (response.has_update) {
+                        $imCheckResult.html(
+                            '<span class="dashicons dashicons-yes-alt"></span> ' + 
+                            internetMelli.strings.update_available
+                        ).addClass('show success');
+
+                        $imNewVersionDisplay.text('v' + response.new_version);
+                        
+                        if (response.release_notes) {
+                            $imReleaseNotes.html('<h4>' + internetMelli.strings.release_notes + '</h4>' + response.release_notes);
+                        } else {
+                            $imReleaseNotes.hide();
+                        }
+                        
+                        $imUpdateSection.slideDown();
+                    } else {
+                        $imCheckResult.html(
+                            '<span class="dashicons dashicons-yes"></span> ' + 
+                            internetMelli.strings.no_update
+                        ).addClass('show success');
+                    }
+                } else {
+                    $imCheckResult.html(
+                        '<span class="dashicons dashicons-warning"></span> ' + 
+                        response.message
+                    ).addClass('show error');
+                }
+            },
+            error: function() {
+                $imCheckResult.html(
+                    '<span class="dashicons dashicons-warning"></span> ' + 
+                    internetMelli.strings.error
+                ).addClass('show error');
+            },
+            complete: function() {
+                // برگرداندن دکمه به حالت اول
+                $imCheckBtn.prop('disabled', false).removeClass('updating');
+                $imCheckBtn.html('<span class="dashicons dashicons-update"></span> ' + internetMelli.strings.check_update);
+            }
+        });
+    }
+
+    function installUpdate() {
+        if (!cachedUpdateData || !cachedUpdateData.download_url) {
+            $imUpdateMessage.html(internetMelli.strings.no_download_url).addClass('show error');
+            return;
+        }
+
+        $imInstallBtn.prop('disabled', true).addClass('updating');
+        $imInstallBtn.html('<span class="im-btn-spinner"></span> ' + internetMelli.strings.updating);
+        $imUpdateLoading.show();
+        $imUpdateLoadingText.text(internetMelli.strings.updating);
+
+        $.ajax({
+            url: internetMelli.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'install_plugin_update',
+                nonce: internetMelli.nonce,
+                download_url: cachedUpdateData.download_url
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    $imUpdateMessage.html(
+                        '<span class="dashicons dashicons-yes-alt"></span> ' + 
+                        response.message
+                    ).addClass('show success');
+                    
+                    $imUpdateSection.slideUp();
+                    
+                    setTimeout(function() {
+                        alert(internetMelli.strings.reactivate_plugin);
+                    }, 500);
+                } else {
+                    $imUpdateMessage.html(
+                        '<span class="dashicons dashicons-warning"></span> ' + 
+                        response.message
+                    ).addClass('show error');
+                }
+            },
+            error: function() {
+                $imUpdateMessage.html(
+                    '<span class="dashicons dashicons-warning"></span> ' + 
+                    internetMelli.strings.error
+                ).addClass('show error');
+            },
+            complete: function() {
+                $imInstallBtn.prop('disabled', false).removeClass('updating');
+                $imInstallBtn.html('<span class="dashicons dashicons-download"></span> ' + internetMelli.strings.install_update);
+                $imUpdateLoading.hide();
+            }
+        });
+    }
+
+})(jQuery);
+
+
+
+jQuery(function($) {
+
+    $('#internet_melli_delete_all_btn').on('click', function() {
+
+        if (!confirm('آیا مطمئن هستید؟ تمام اطلاعات پلاگین برای همیشه حذف می‌شود.')) {
+            return;
+        }
+
+        $('#internet_melli_delete_all_btn').prop('disabled', true);
+
+        $.ajax({
+            url: internetMelli.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'internet_melli_delete_all',
+                nonce: internetMelli.nonce
+            },
+            success: function(response) {
+                $('#internet_melli_delete_all_result')
+                    .text(response.data.message || 'انجام شد.')
+                    .css('color', 'green')
+                    .show();
+
+                $('#internet_melli_delete_all_btn').prop('disabled', false);
+            },
+            error: function() {
+                $('#internet_melli_delete_all_result')
+                    .text('خطا در حذف اطلاعات.')
+                    .css('color', 'red')
+                    .show();
+
+                $('#internet_melli_delete_all_btn').prop('disabled', false);
+            }
+        });
+
+    });
+
+});
