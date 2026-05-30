@@ -30,6 +30,12 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Changelog ==
 
+= 1.4 =
+* UX improvement
+* Some help and guidelines added
+* Some data entry rule has beed better
+
+
 = 1.3 =
 * UX
 * Improvement of frontend blockage
