@@ -11,7 +11,7 @@ class Internet_Melli_Blocker
     public static function init()
     {
 
-        if (! (int) get_option('internet_melli_backend_enabled', 0)) {
+        if ((string) get_option('internet_melli_backend_enabled', '1') === '0') {
             return;
         }
 

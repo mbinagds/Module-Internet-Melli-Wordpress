@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
 }
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
-$plugin_data = get_plugin_data(__FILE__);
+$plugin_data = get_plugin_data(__FILE__, false, false);
 define('INTERNET_MELLI_VERSION', $plugin_data['Version']);
 define('INTERNET_MELLI_PATH', plugin_dir_path(__FILE__));
 define('INTERNET_MELLI_URL', plugin_dir_url(__FILE__));
