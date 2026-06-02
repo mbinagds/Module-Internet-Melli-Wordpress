@@ -89,7 +89,7 @@ class Internet_Melli_Admin
             array(
                 'type' => 'integer',
                 'sanitize_callback' => 'absint',
-                'default' => 0
+                'default' => 1
             )
         );
 
@@ -141,7 +141,7 @@ class Internet_Melli_Admin
     {
         $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'settings';
         $enabled = get_option('internet_melli_enabled', 0);
-        $backend_enabled = get_option('internet_melli_backend_enabled', 0);
+        $backend_enabled = get_option('internet_melli_backend_enabled', 1);
         $sw_guarantee = get_option('internet_melli_sw_guarantee', 0);
 
 
