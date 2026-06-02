@@ -38,8 +38,8 @@ class Internet_Melli_Admin
         // منوی اصلی (تنظیمات)
         add_submenu_page(
             'internet-melli',
-            'تنظیمات افزونه',
-            'تنظیمات افزونه',
+            __('تنظیمات افزونه', 'internet-melli'),
+            __('تنظیمات افزونه', 'internet-melli'),
             'manage_options',
             'internet-melli',
             array($this, 'render_admin_page')
@@ -48,8 +48,8 @@ class Internet_Melli_Admin
         // منوی دوم (فعال‌سازی اضطراری)
         add_submenu_page(
             'internet-melli',
-            'فعال‌سازی اورژانسی افزونه‌ها',
-            'فعال‌سازی اورژانسی افزونه‌ها',
+            __('فعال‌سازی اورژانسی افزونه‌ها', 'internet-melli'),
+            __('فعال‌سازی اورژانسی افزونه‌ها', 'internet-melli'),
             'manage_options',
             'internet-melli&tab=active-plugins',
             array($this, 'render_admin_page')
@@ -173,7 +173,7 @@ class Internet_Melli_Admin
                         ?>
                         <!--</span>-->
                         <span class="im-badge im-badge-active">
-                            موتور شناسایی: فعال
+                            <?php echo esc_html__('موتور شناسایی: فعال', 'internet-melli'); ?>
                         </span>
                         <span class="im-version-badge">v<?php echo esc_html($this->version); ?></span>
                     </div>
@@ -186,12 +186,12 @@ class Internet_Melli_Admin
                     <div class="im-tabs">
                         <a href="?page=internet-melli&tab=settings"
                             class="im-tab <?php echo $active_tab == 'settings' ? 'im-tab-active' : ''; ?>">
-                            تنظیمات افزونه
+                            <?php echo esc_html__('تنظیمات افزونه', 'internet-melli'); ?>
                         </a>
 
                         <a href="?page=internet-melli&tab=active-plugins"
                             class="im-tab <?php echo $active_tab == 'active-plugins' ? 'im-tab-active' : ''; ?>">
-                            فعال‌سازی اورژانسی افزونه‌ها
+                            <?php echo esc_html__('فعال‌سازی اورژانسی افزونه‌ها', 'internet-melli'); ?>
                         </a>
                     </div>
                 </div>
@@ -215,10 +215,10 @@ class Internet_Melli_Admin
                                     <div class="im-form-row">
                                         <div class="im-form-label">
                                             <label for="internet_melli_backend_enabled">
-                                                فعالسازی مسدودکننده بک اند
+                                                <?php echo esc_html__('فعالسازی مسدودکننده بک اند', 'internet-melli'); ?>
                                             </label>
                                             <p class="im-description">
-                                                این گزینه بسیار کاربردی است و پیشنهاد میشود در اکثر سایت ها فعال باشد.
+                                                <?php echo esc_html__('این گزینه بسیار کاربردی است و پیشنهاد میشود در اکثر سایت ها فعال باشد.', 'internet-melli'); ?>
                                             </p>
                                         </div>
                                         <div class="im-form-control">
@@ -287,9 +287,7 @@ class Internet_Melli_Admin
                                                 <?php echo esc_html__('لیست دامنه‌های مسدود شده', 'internet-melli'); ?>
                                             </label>
                                             <p class="im-description">
-                                                <?php echo esc_html__('دامنه‌های خارج ایران را به صورت جداگانه برای فرانت‌اند و بک‌اند تنظیم کنید.
-         تنظیم صحیح دامنه های بک اند خارجی باعث بهبود سرعت پیشخوان شما و کاربر بازدید کننده سایت میشوند.
-          کنترل دامنه های فرانت اند باعث بهبود سرعت نمایش برای کاربر بازدید کننده سایت میشود.', 'internet-melli'); ?>
+                                                <?php echo esc_html__('دامنه‌های خارج ایران را به صورت جداگانه برای فرانت‌اند و بک‌اند تنظیم کنید. تنظیم صحیح دامنه های بک اند خارجی باعث بهبود سرعت پیشخوان شما و کاربر بازدید کننده سایت میشوند. کنترل دامنه های فرانت اند باعث بهبود سرعت نمایش برای کاربر بازدید کننده سایت میشود.', 'internet-melli'); ?>
                                             </p>
 
                                             <div class="im-domain-columns" style="display: flex; gap: 20px; margin-top: 15px;">
@@ -380,14 +378,14 @@ class Internet_Melli_Admin
 
 
                             <div style="margin-top:30px; padding:15px; border:1px solid #cc0000; background:#ffecec;">
-                                <h3 style="color:#cc0000;">حذف کامل اطلاعات پلاگین</h3>
-                                <p>با زدن این دکمه تمام تنظیمات ذخیره‌شده در دیتابیس حذف می‌شود. این عملیات غیرقابل بازگشت است.</p>
+                                <h3 style="color:#cc0000;"><?php echo esc_html__('حذف کامل اطلاعات پلاگین', 'internet-melli'); ?></h3>
+                                <p><?php echo esc_html__('با زدن این دکمه تمام تنظیمات ذخیره‌شده در دیتابیس حذف می‌شود. این عملیات غیرقابل بازگشت است.', 'internet-melli'); ?></p>
 
                                 <button type="button"
                                     id="internet_melli_delete_all_btn"
                                     class="button button-secondary"
                                     style="border-color:#cc0000; color:#cc0000;">
-                                    حذف همه اطلاعات از دیتابیس
+                                    <?php echo esc_html__('حذف همه اطلاعات از دیتابیس', 'internet-melli'); ?>
                                 </button>
 
                                 <p id="internet_melli_delete_all_result" style="margin-top:10px; display:none;"></p>
@@ -411,10 +409,10 @@ class Internet_Melli_Admin
                                         <span class="im-info-value"><?php echo esc_html($this->version); ?></span>
                                     </li>
                                     <li>
-                                        <span class="im-info-label">موتور شناسایی</span>
+                                        <span class="im-info-label"><?php echo esc_html__('موتور شناسایی', 'internet-melli'); ?></span>
                                         <span class="im-info-value im-info-activity">
                                             <span class="im-status-dot im-status-active"></span>
-                                            فعال
+                                            <?php echo esc_html__('فعال', 'internet-melli'); ?>
                                         </span>
                                     </li>
                                     <li>
@@ -448,7 +446,21 @@ class Internet_Melli_Admin
                                     <div class="im-step">
                                         <span class="im-step-number">1</span>
                                         <span>
-                                            در صورت فعال بودن <strong style="color:#a710a7">درگاه بانکی یا سرویس پیامکی یا سایتهایی که api ایرانی آنها مهم است</strong> فرآیند آن را یک‌بار به‌صورت کامل بررسی کنید. پس از شناسایی دامنه های مرتبط، وضعیت آن را روی Open قرار دهید.
+                                            <?php
+
+$p1 = esc_html__('در صورت فعال بودن', 'internet-melli');
+$p2 = esc_html__('درگاه بانکی یا سرویس پیامکی یا سایتهایی که api ایرانی آنها مهم است', 'internet-melli');
+$p3 = esc_html__('فرآیند آن را یک‌بار به‌صورت کامل بررسی کنید. پس از شناسایی دامنه های مرتبط، وضعیت آن را روی Open قرار دهید.', 'internet-melli');
+
+
+printf(
+    '%1$s <strong style="color:#a710a7">%2$s</strong> %3$s',
+    $p1,
+    $p2,
+    $p3
+);
+?>
+
                                         </span>
 
                                     </div>
@@ -458,15 +470,22 @@ class Internet_Melli_Admin
                                     </div>
                                     <div class="im-step">
                                         <span class="im-step-number">3</span>
-                                        <span><?php echo esc_html__('پس از اعمال هرگونه تغییر در بخش‌های افزونه، حتماً بر روی گزینه "ذخیره تنظیمات" کلیک کنید.', 'internet-melli'); ?></span>
+                                        <span>
+                                                    <?php
+        printf(
+            esc_html__('پس از اعمال هرگونه تغییر در بخش‌های افزونه، حتماً بر روی گزینه "%s" کلیک کنید.', 'internet-melli'),
+            esc_html__('ذخیره تنظیمات', 'internet-melli')
+        );
+        ?>
+                                        </span>
                                     </div>
                                     <div class="im-step">
                                         <span class="im-step-number">4</span>
-                                        <span>این افزونه کاملا اپن-سورس است و هیچگونه تغییری در هسته وردپرس ایجاد نمی‌کند</span>
+                                        <span><?php echo esc_html__('این افزونه کاملا اپن-سورس است و هیچگونه تغییری در هسته وردپرس ایجاد نمی‌کند', 'internet-melli'); ?></span>
                                     </div>
                                     <div class="im-step">
                                         <span class="im-step-number">5</span>
-                                        <span>پس از انجام تنظیمات اولیه، ریست کردن افزونه کش در بعضی سایت ها کمک کننده است</span>
+                                        <span><?php echo esc_html__('پس از انجام تنظیمات اولیه، ریست کردن افزونه کش در بعضی سایت ها کمک کننده است', 'internet-melli'); ?></span>
                                     </div>
                                 </div>
                             </div>
@@ -479,7 +498,7 @@ class Internet_Melli_Admin
                             </div>
                             <div class="im-card-body">
                                 <p class="im-test-desc"><?php echo esc_html__('وضعیت ریکوئستر را بررسی کنید', 'internet-melli'); ?></p>
-                                <p>تنها در زمان اختلال شدید اینترنت، نیاز به فعال بودن ریکوئستر هست</p>
+                                <p><?php echo esc_html__('تنها در زمان اختلال شدید اینترنت، نیاز به فعال بودن ریکوئستر هست', 'internet-melli'); ?></p>
                                 <button type="button" id="internet-melli-test-btn" class="im-btn im-btn-secondary">
                                     <span class="dashicons dashicons-yes-alt"></span>
                                     <?php echo esc_html__('تست وضعیت', 'internet-melli'); ?>
@@ -557,9 +576,9 @@ class Internet_Melli_Admin
 
                                     <div class="im-feedback-field">
                                         <label for="im-feedback-text">
-                                            منتظر نظراتتون هستیم 💬
+                                            <?php echo esc_html__('منتظر نظراتتون هستیم 💬', 'internet-melli'); ?>
                                             <br />
-                                            (در صورت تمایل راه ارتباطی خود را نیز ذکر کنید)
+                                            <?php echo esc_html__('(در صورت تمایل راه ارتباطی خود را نیز ذکر کنید)', 'internet-melli'); ?>
                                         </label>
 
                                         <textarea id="im-feedback-text"
@@ -620,18 +639,18 @@ class Internet_Melli_Admin
                                     </a>
                                 </div>
                                 <div class="im-social-links">
-                                    <a href="https://ble.ir/talashnet" target="_blank" class="im-social-btn" title="پیام رسان بله">
+                                    <a href="https://ble.ir/talashnet" target="_blank" class="im-social-btn" title="<?php echo esc_attr__('پیام رسان بله', 'internet-melli'); ?>">
                                         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg" class="Hz484Q">
                                             <path fill-rule="evenodd" clip-rule="evenodd" d="M7.69592 13.3899C7.05115 13.3899 6.52734 12.8661 6.52734 12.2214C6.52734 11.5785 7.05115 11.0547 7.69592 11.0547C8.34068 11.0547 8.86449 11.5785 8.86449 12.2214C8.86449 12.8661 8.34068 13.3899 7.69592 13.3899ZM12.2388 13.3899C11.594 13.3899 11.0702 12.8661 11.0702 12.2214C11.0702 11.5785 11.594 11.0547 12.2388 11.0547C12.8835 11.0547 13.4073 11.5785 13.4073 12.2214C13.4073 12.8661 12.8835 13.3899 12.2388 13.3899ZM15.6132 12.2214C15.6132 12.8661 16.137 13.3899 16.7817 13.3899C17.4265 13.3899 17.9503 12.8661 17.9503 12.2214C17.9503 11.5785 17.4265 11.0547 16.7817 11.0547C16.137 11.0547 15.6132 11.5785 15.6132 12.2214Z" fill="#00B894"></path>
                                             <path fill-rule="evenodd" clip-rule="evenodd" d="M12.02 2C6.21 2 2 6.74612 2 12.015C2 13.6975 2.49 15.4291 3.35 17.0115C3.51 17.2729 3.53 17.6024 3.42 17.9139L2.75 20.1572C2.6 20.698 3.06 21.0976 3.57 20.9374L5.59 20.3375C6.14 20.1572 6.57 20.3866 7.08 20.698C8.54 21.5583 10.36 22 12 22C16.96 22 22 18.1642 22 11.985C22 6.65598 17.7 2 12.02 2Z" stroke="#00B894" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
                                         </svg>
                                     </a>
-                                    <a href="https://t.me/talashnet" target="_blank" class="im-social-btn" title="تلگرام">
+                                    <a href="https://t.me/talashnet" target="_blank" class="im-social-btn" title="<?php echo esc_attr__('تلگرام', 'internet-melli'); ?>">
                                         <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                                             <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
                                         </svg>
                                     </a>
-                                    <a href="https://instagram.com/talashnet" target="_blank" class="im-social-btn" title="اینستاگرام">
+                                    <a href="https://instagram.com/talashnet" target="_blank" class="im-social-btn" title="<?php echo esc_attr__('اینستاگرام', 'internet-melli'); ?>">
                                         <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                                             <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
                                         </svg>
@@ -660,7 +679,7 @@ class Internet_Melli_Admin
                 <div class="im-card-body">
 
                     <p class="im-description im-description-highlight">
-                        اگر برای نصب در سایت دیگر خود، به دلیل خطاهای PHP یا کندی شدید سایت جدیدتان امکان ورود به پیشخوان وردپرس را ندارید، این ابزار به شما کمک می‌کند افزونه‌های مشکل‌دار را به‌صورت مستقیم و اضطراری مدیریت کنید.
+                        <?php echo esc_html__('اگر برای نصب در سایت دیگر خود، به دلیل خطاهای PHP یا کندی شدید سایت جدیدتان امکان ورود به پیشخوان وردپرس را ندارید، این ابزار به شما کمک می‌کند افزونه‌های مشکل‌دار را به‌صورت مستقیم و اضطراری مدیریت کنید.', 'internet-melli'); ?>
                     </p>
 
                     <div class="im-guide-steps im-guide-steps-spaced">
@@ -700,7 +719,7 @@ class Internet_Melli_Admin
                         <div class="im-step">
                             <div class="im-step-number">5</div>
                             <div>
-                                پس از اتمام کار، فایل نصب شده را حذف کنید.
+                                <?php echo esc_html__('پس از اتمام کار، فایل نصب شده را حذف کنید.', 'internet-melli'); ?>
                             </div>
                         </div>
 
@@ -769,18 +788,18 @@ class Internet_Melli_Admin
                     </div>
 
                     <div class="im-social-links">
-                        <a href="https://ble.ir/talashnet" target="_blank" class="im-social-btn" title="پیام رسان بله">
+                        <a href="https://ble.ir/talashnet" target="_blank" class="im-social-btn" title="<?php echo esc_attr__('پیام رسان بله', 'internet-melli'); ?>">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg" class="Hz484Q">
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M7.69592 13.3899C7.05115 13.3899 6.52734 12.8661 6.52734 12.2214C6.52734 11.5785 7.05115 11.0547 7.69592 11.0547C8.34068 11.0547 8.86449 11.5785 8.86449 12.2214C8.86449 12.8661 8.34068 13.3899 7.69592 13.3899ZM12.2388 13.3899C11.594 13.3899 11.0702 12.8661 11.0702 12.2214C11.0702 11.5785 11.594 11.0547 12.2388 11.0547C12.8835 11.0547 13.4073 11.5785 13.4073 12.2214C13.4073 12.8661 12.8835 13.3899 12.2388 13.3899ZM15.6132 12.2214C15.6132 12.8661 16.137 13.3899 16.7817 13.3899C17.4265 13.3899 17.9503 12.8661 17.9503 12.2214C17.9503 11.5785 17.4265 11.0547 16.7817 11.0547C16.137 11.0547 15.6132 11.5785 15.6132 12.2214Z" fill="#00B894"></path>
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M12.02 2C6.21 2 2 6.74612 2 12.015C2 13.6975 2.49 15.4291 3.35 17.0115C3.51 17.2729 3.53 17.6024 3.42 17.9139L2.75 20.1572C2.6 20.698 3.06 21.0976 3.57 20.9374L5.59 20.3375C6.14 20.1572 6.57 20.3866 7.08 20.698C8.54 21.5583 10.36 22 12 22C16.96 22 22 18.1642 22 11.985C22 6.65598 17.7 2 12.02 2Z" stroke="#00B894" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
                             </svg>
                         </a>
-                        <a href="https://t.me/talashnet" target="_blank" class="im-social-btn" title="تلگرام">
+                        <a href="https://t.me/talashnet" target="_blank" class="im-social-btn" title="<?php echo esc_attr__('تلگرام', 'internet-melli'); ?>">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                                 <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
                             </svg>
                         </a>
-                        <a href="https://instagram.com/talashnet" target="_blank" class="im-social-btn" title="اینستاگرام">
+                        <a href="https://instagram.com/talashnet" target="_blank" class="im-social-btn" title="<?php echo esc_attr__('اینستاگرام', 'internet-melli'); ?>">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                                 <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
                             </svg>
@@ -857,8 +876,9 @@ class Internet_Melli_Admin
                     'no_update'       => __('شما از آخرین نسخه استفاده می‌کنید', 'internet-melli'),
                     'release_notes'   => __('تغییرات:', 'internet-melli'),
                     'updating'        => __('در حال آپدیت...', 'internet-melli'),
-                    'no_download_url' => __('لینک دانلود یافت نشد', 'internet-melli')
-
+                    'no_download_url' => __('لینک دانلود یافت نشد', 'internet-melli'),
+                    'blocked_domains'   => __('دامنه‌های مسدود شده', 'internet-melli'),
+                    'count_unit'        => __('عدد', 'internet-melli'),
                 )
             )
         );
@@ -935,7 +955,7 @@ class Internet_Melli_Admin
                 // ✅ اگر هر دو روش شکست خورد
                 if (! $written) {
                     wp_send_json_error(array(
-                        'message' => 'امکان ایجاد فایل sw.js وجود ندارد. دسترسی نوشتن روی روت وردپرس بررسی شود.'
+                        'message' => __('امکان ایجاد فایل sw.js وجود ندارد. دسترسی نوشتن روی روت وردپرس بررسی شود.', 'internet-melli')
                     ));
                 }
             }

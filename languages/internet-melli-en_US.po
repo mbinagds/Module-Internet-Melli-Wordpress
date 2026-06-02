@@ -1,0 +1,332 @@
+# English (US) translation for Internet Melli Plugin
+# Copyright (C) TalashNet
+# This file is distributed under the same license as the Internet Melli plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Internet Melli 1.4.2\n"
+"Report-Msgid-Bugs-To: info@talashnet.com\n"
+"POT-Creation-Date: 2025-01-01 00:00+0000\n"
+"PO-Revision-Date: 2025-01-01 00:00+0000\n"
+"Last-Translator: TalashNet <info@talashnet.com>\n"
+"Language-Team: English <info@talashnet.com>\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Manual\n"
+
+msgid "مسدودکننده سایت‌های خارجی"
+msgstr "External Sites Blocker"
+
+msgid "مسدودکننده خارجی"
+msgstr "External Blocker"
+
+msgid "مدیریت و کنترل دسترسی به منابع خارجی (افزونه اینترنت ملی)"
+msgstr "Manage and control access to external resources (Internet Melli Plugin)"
+
+msgid "خطای امنیتی"
+msgstr "Security Error"
+
+msgid "دسترسی غیرمجاز"
+msgstr "Unauthorized Access"
+
+msgid "دسترسی غیرمجاز."
+msgstr "Unauthorized Access."
+
+msgid "توکن امنیتی نامعتبر است."
+msgstr "Invalid security token."
+
+msgid "تمام اطلاعات پلاگین با موفقیت حذف شد."
+msgstr "All plugin data deleted successfully."
+
+msgid "تنظیمات افزونه"
+msgstr "Plugin Settings"
+
+msgid "فعال سازی مسدودکننده فرانت اند (ریکوئستر)"
+msgstr "Enable Front-end Blocker (Requester)"
+
+msgid "این گزینه اختیاری است. این گزینه در شرایط اختلال شدید اینترنت کاربرد دارد و برای سایت‌هایی که به‌دلیل لود نشدن فونت گوگل یا سایر منابع خارجی کاربران با صفحه سفید مواجه می‌شوند، راهکار مناسبی محسوب می‌شود."
+msgstr "This option is optional. It is useful during severe internet disruptions and is a good solution for sites where users see a white screen due to Google Fonts or other external resources failing to load."
+
+msgid "این گزینه اختیاری است. در برخی سایت‌ها ممکن است آدرس sw.js به درستی مسیردهی نشود و خطای 404 بدهد. با فعال کردن این گزینه یک فایل sw.js در روت وردپرس ساخته می‌شود تا همیشه در دسترس باشد."
+msgstr "This option is optional. On some sites, the sw.js URL may not route correctly and return a 404 error. Enabling this option creates a sw.js file in the WordPress root so it is always accessible."
+
+msgid "تضمین ریکوئستر"
+msgstr "Requester Guarantee"
+
+msgid "لیست دامنه‌های مسدود شده"
+msgstr "Blocked Domains List"
+
+msgid "دامنه‌های خارج ایران را به صورت جداگانه برای فرانت‌اند و بک‌اند تنظیم کنید.\n         تنظیم صحیح دامنه های بک اند خارجی باعث بهبود سرعت پیشخوان شما و کاربر بازدید کننده سایت میشوند.\n          کنترل دامنه های فرانت اند باعث بهبود سرعت نمایش برای کاربر بازدید کننده سایت میشود."
+msgstr "Set non-Iranian domains separately for front-end and back-end.\n         Correctly configuring back-end external domains improves dashboard speed and visitor experience.\n          Controlling front-end domains improves page load speed for your visitors."
+
+msgid "لیست دامنه‌های شناسایی شده بک‌اند"
+msgstr "Detected Back-end Domains List"
+
+msgid "افزودن"
+msgstr "Add"
+
+msgid "عدد"
+msgstr "Count"
+
+msgid "دامنه‌های مسدود شده"
+msgstr "Domains list restricted"
+
+msgid "لیست دامنه‌های مسدود شده فرانت‌اند"
+msgstr "Blocked Front-end Domains List"
+
+msgid "ذخیره تنظیمات"
+msgstr "Save Settings"
+
+msgid "در حال ذخیره..."
+msgstr "Saving..."
+
+msgid "اطلاعات افزونه"
+msgstr "Plugin Info"
+
+msgid "نسخه افزونه"
+msgstr "Plugin Version"
+
+msgid "وضعیت مسدودکننده بک اند"
+msgstr "Back-end Blocker Status"
+
+msgid "فعال"
+msgstr "Active"
+
+msgid "غیرفعال"
+msgstr "Inactive"
+
+msgid "وضعیت مسدودکننده فرانت اند"
+msgstr "Front-end Blocker Status"
+
+msgid "راهنما"
+msgstr "Guide"
+
+msgid "برای اطمینان از عملکرد صحیح افزونه، موارد زیر را بررسی کنید:"
+msgstr "To ensure the plugin works correctly, check the following:"
+
+msgid "جهت فعال‌سازی ریکوئستر می بایست گواهی SSL سایت فعال باشد."
+msgstr "To activate the requester, the site's SSL certificate must be active."
+
+msgid "پس از اعمال هرگونه تغییر در بخش‌های افزونه، حتماً بر روی گزینه \"ذخیره تنظیمات\" کلیک کنید."
+msgstr "After making any changes in the plugin sections, make sure to click \"Save Settings\"."
+
+msgid "پس از اعمال هرگونه تغییر در بخش‌های افزونه، حتماً بر روی گزینه \"%s\" کلیک کنید."
+msgstr "After making any changes in the plugin sections, make sure to click \"%s\"."
+
+msgid "ذخیره تنظیمات"
+msgstr "Save Settings"
+
+msgid "تست مسدودکننده فرانت اند (ریکوئستر)"
+msgstr "Test Front-end Blocker (Requester)"
+
+msgid "وضعیت ریکوئستر را بررسی کنید"
+msgstr "Check requester status"
+
+msgid "تست وضعیت"
+msgstr "Test Status"
+
+msgid "آپدیت افزونه"
+msgstr "Plugin Update"
+
+msgid "نسخه فعلی:"
+msgstr "Current Version:"
+
+msgid "بررسی آپدیت"
+msgstr "Check for Updates"
+
+msgid "نسخه جدید موجود است!"
+msgstr "New version available!"
+
+msgid "دانلود و نصب آپدیت"
+msgstr "Download and Install Update"
+
+msgid "در حال پردازش..."
+msgstr "Processing..."
+
+msgid "ارسال فیدبک"
+msgstr "Send Feedback"
+
+msgid "لطفاً پیام خود را بنویسید..."
+msgstr "Please write your message..."
+
+msgid "ارسال"
+msgstr "Send"
+
+msgid "در حال ارسال..."
+msgstr "Sending..."
+
+msgid "ارتباط با ما"
+msgstr "Contact Us"
+
+msgid "تلاش نت"
+msgstr "TalashNet"
+
+msgid "راهکاری جامع در فناوری اطلاعات"
+msgstr "A comprehensive IT solution"
+
+msgid "وب سایت"
+msgstr "Website"
+
+msgid "ایمیل"
+msgstr "Email"
+
+msgid "تماس"
+msgstr "Contact"
+
+msgid "ابزار مدیریت اضطراری افزونه‌ها"
+msgstr "Emergency Plugin Management Tool"
+
+msgid "فایل ابزار اورژانسی را دانلود کنید."
+msgstr "Download the emergency tool file."
+
+msgid "فایل را در مسیر public_html یا روت وردپرس هاست قرار دهید."
+msgstr "Place the file in the public_html or WordPress root directory of your host."
+
+msgid "آدرس فایل را در مرورگر باز کنید."
+msgstr "Open the file URL in your browser."
+
+msgid "مثال:"
+msgstr "Example:"
+
+msgid "از صفحه بازشده افزونه‌ها را فعال یا غیرفعال کنید."
+msgstr "Activate or deactivate plugins from the opened page."
+
+msgid "دانلود ابزار اورژانسی"
+msgstr "Download Emergency Tool"
+
+msgid "تنظیمات با موفقیت ذخیره شد!"
+msgstr "Settings saved successfully!"
+
+msgid "تنظیمات ذخیره شد!"
+msgstr "Settings saved!"
+
+msgid "خطایی رخ داد. لطفا دوباره تلاش کنید."
+msgstr "An error occurred. Please try again."
+
+msgid "در حال تست..."
+msgstr "Testing..."
+
+msgid "ریکوئستر فعال است!"
+msgstr "Requester is active!"
+
+msgid "ریکوئستر فعال نیست."
+msgstr "Requester is not active."
+
+msgid "این دامنه قبلاً اضافه شده است"
+msgstr "This domain has already been added"
+
+msgid "دامنه اضافه شد"
+msgstr "Domain added"
+
+msgid "دامنه حذف شد"
+msgstr "Domain removed"
+
+msgid "دامنه ویرایش شد"
+msgstr "Domain updated"
+
+msgid "هنوز دامنه‌ای اضافه نشده است"
+msgstr "No domains added yet"
+
+msgid "در حال بررسی..."
+msgstr "Checking..."
+
+msgid "نسخه جدید یافت شد!"
+msgstr "New version found!"
+
+msgid "شما از آخرین نسخه استفاده می‌کنید"
+msgstr "You are using the latest version"
+
+msgid "تغییرات:"
+msgstr "Changelog:"
+
+msgid "در حال آپدیت..."
+msgstr "Updating..."
+
+msgid "لینک دانلود یافت نشد"
+msgstr "Download link not found"
+
+msgid "ریکوئستر فعال است"
+msgstr "Requester is active"
+
+msgid "ریکوئستر غیرفعال است"
+msgstr "Requester is inactive"
+
+msgid "لطفاً یک دامنه وارد کنید"
+msgstr "Please enter a domain"
+
+msgid "لطفاً یک دامنه معتبر وارد کنید"
+msgstr "Please enter a valid domain"
+
+msgid "فعالسازی مسدودکننده بک اند"
+msgstr "Enable Back-end Blocker"
+
+msgid "این گزینه بسیار کاربردی است و پیشنهاد میشود در اکثر سایت ها فعال باشد."
+msgstr "This option is very useful and it is recommended to keep it enabled on most sites."
+
+msgid "دامنه‌های خارج ایران را به صورت جداگانه برای فرانت‌اند و بک‌اند تنظیم کنید. تنظیم صحیح دامنه های بک اند خارجی باعث بهبود سرعت پیشخوان شما و کاربر بازدید کننده سایت میشوند. کنترل دامنه های فرانت اند باعث بهبود سرعت نمایش برای کاربر بازدید کننده سایت میشود."
+msgstr "Configure non-Iranian domains separately for front-end and back-end. Correctly setting back-end external domains improves your dashboard and visitor speed. Controlling front-end domains improves page load speed for your visitors."
+
+msgid "حذف کامل اطلاعات پلاگین"
+msgstr "Delete All Plugin Data"
+
+msgid "با زدن این دکمه تمام تنظیمات ذخیره‌شده در دیتابیس حذف می‌شود. این عملیات غیرقابل بازگشت است."
+msgstr "Clicking this button will delete all plugin settings stored in the database. This action is irreversible."
+
+msgid "حذف همه اطلاعات از دیتابیس"
+msgstr "Delete All Data from Database"
+
+msgid "موتور شناسایی"
+msgstr "Detection Engine"
+
+msgid "موتور شناسایی: فعال"
+msgstr "Detection Engine: Active"
+
+msgid "تنظیمات افزونه"
+msgstr "Plugin Settings"
+
+msgid "فعال‌سازی اورژانسی افزونه‌ها"
+msgstr "Emergency Plugin Activation"
+
+msgid "در صورت فعال بودن"
+msgstr "If you have an active"
+
+msgid "درگاه بانکی یا سرویس پیامکی یا سایتهایی که api ایرانی آنها مهم است"
+msgstr "payment gateway, SMS service, or sites with important Iranian APIs"
+
+msgid "فرآیند آن را یک‌بار به‌صورت کامل بررسی کنید. پس از شناسایی دامنه های مرتبط، وضعیت آن را روی Open قرار دهید."
+msgstr "test the full process once. After identifying related domains, set their status to Open."
+
+msgid "این افزونه کاملا اپن-سورس است و هیچگونه تغییری در هسته وردپرس ایجاد نمی‌کند"
+msgstr "This plugin is fully open-source and makes no changes to the WordPress core"
+
+msgid "پس از انجام تنظیمات اولیه، ریست کردن افزونه کش در بعضی سایت ها کمک کننده است"
+msgstr "After initial setup, clearing the cache plugin can be helpful on some sites"
+
+msgid "تنها در زمان اختلال شدید اینترنت، نیاز به فعال بودن ریکوئستر هست"
+msgstr "The requester only needs to be active during severe internet disruptions"
+
+msgid "منتظر نظراتتون هستیم 💬"
+msgstr "We are looking forward to your feedback 💬"
+
+msgid "(در صورت تمایل راه ارتباطی خود را نیز ذکر کنید)"
+msgstr "(Feel free to include your contact information)"
+
+msgid "اگر برای نصب در سایت دیگر خود، به دلیل خطاهای PHP یا کندی شدید سایت جدیدتان امکان ورود به پیشخوان وردپرس را ندارید، این ابزار به شما کمک می‌کند افزونه‌های مشکل‌دار را به‌صورت مستقیم و اضطراری مدیریت کنید."
+msgstr "If you cannot access the WordPress dashboard of another site due to PHP errors or severe slowness, this tool helps you manage problematic plugins directly and in an emergency."
+
+msgid "پس از اتمام کار، فایل نصب شده را حذف کنید."
+msgstr "After finishing, delete the installed file."
+
+msgid "امکان ایجاد فایل sw.js وجود ندارد. دسترسی نوشتن روی روت وردپرس بررسی شود."
+msgstr "Unable to create sw.js file. Please check write permissions on the WordPress root."
+
+msgid "پیام رسان بله"
+msgstr "Bale Messenger"
+
+msgid "تلگرام"
+msgstr "Telegram"
+
+msgid "اینستاگرام"
+msgstr "Instagram"

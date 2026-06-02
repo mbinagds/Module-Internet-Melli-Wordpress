@@ -238,8 +238,8 @@ jQuery(document).ready(function ($) {
 
         var html = '';
         html += '<div class="im-domains-header">';
-        html += '<span>دامنه‌های مسدود شده</span>';
-        html += '<span class="im-domains-count">' + domains.length + ' عدد</span>';
+        html += '<span>' + internetMelli.strings.blocked_domains + '</span>';
+        html += '<span class="im-domains-count">' + internetMelli.strings.count_unit + ' ' + domains.length + '</span>';
         html += '</div>';
         html += '<ul class="im-domains-list">';
 
@@ -405,8 +405,8 @@ jQuery(document).ready(function ($) {
             return;
         }
         var html = '<div class="im-domains-header">' +
-            '<span>دامنه‌های مسدود شده</span>' +
-            '<span class="im-domains-count">' + this.domains.length + ' عدد</span>' +
+            '<span>' + internetMelli.strings.blocked_domains + '</span>' +
+            '<span class="im-domains-count">' + internetMelli.strings.count_unit + ' ' + this.domains.length + '</span>' +
             '</div>';
         html += '<ul class="im-domains-list">';
         var self = this;
