@@ -1,0 +1,32 @@
+{
+  "assets/js/admin-settings.js": {
+    "mtime": 1780429966.0,
+    "ast_hash": "4a7df6896454c33138bd66f42cc586f0",
+    "semantic_hash": "4a7df6896454c33138bd66f42cc586f0"
+  },
+  "includes/class-internet-melli-admin.php": {
+    "mtime": 1780429966.0,
+    "ast_hash": "d31c67a5af711fda2cf37c3ead14bd4b",
+    "semantic_hash": "d31c67a5af711fda2cf37c3ead14bd4b"
+  },
+  "includes/class-internet-melli-blocker.php": {
+    "mtime": 1780429966.0,
+    "ast_hash": "ac5b135e1f4bea8e93bb969f27714a02",
+    "semantic_hash": "ac5b135e1f4bea8e93bb969f27714a02"
+  },
+  "includes/class-internet-melli-remover.php": {
+    "mtime": 1780429966.0,
+    "ast_hash": "54f8853056da91f5a648e86ed4a172f5",
+    "semantic_hash": "54f8853056da91f5a648e86ed4a172f5"
+  },
+  "includes/class-internet-melli-updater.php": {
+    "mtime": 1780429966.0,
+    "ast_hash": "52a1dad7684f215bb9f281d149943f86",
+    "semantic_hash": "52a1dad7684f215bb9f281d149943f86"
+  },
+  "internet-melli.php": {
+    "mtime": 1780429966.0,
+    "ast_hash": "ed91f0198ee66722b2fc6a54d17529e0",
+    "semantic_hash": "ed91f0198ee66722b2fc6a54d17529e0"
+  }
+}

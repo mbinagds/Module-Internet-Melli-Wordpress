@@ -1,0 +1,12 @@
+# graphify's own output
+graphify-out/
+
+# Vendored third-party Claude Code config & skills — NOT this project's source.
+# (This repo is not a git repo, so there is no .gitignore fallback; exclude explicitly.)
+.claude/
+
+# Binary gettext catalogs (the .po sources are kept)
+languages/*.mo
+
+# License text — noise for the graph
+LICENSE

@@ -1,0 +1,209 @@
+{
+  "communities": {
+    "0": [
+      "entrypoint_doc",
+      "includes_class_internet_melli_blocker",
+      "includes_class_internet_melli_blocker_internet_melli_blocker",
+      "includes_class_internet_melli_blocker_internet_melli_blocker_block_by_backend_list",
+      "includes_class_internet_melli_blocker_internet_melli_blocker_filter_snitch_hosts_from_backend",
+      "includes_class_internet_melli_blocker_internet_melli_blocker_get_backend_domains",
+      "includes_class_internet_melli_blocker_internet_melli_blocker_get_host_from_url",
+      "includes_class_internet_melli_blocker_internet_melli_blocker_init",
+      "includes_class_internet_melli_blocker_internet_melli_blocker_log_and_learn_domains",
+      "includes_class_internet_melli_blocker_internet_melli_blocker_save_backend_domains",
+      "internetmelli_php_entry",
+      "internetmelli_singleton",
+      "overview_doc",
+      "readme_description",
+      "swjs_service_worker"
+    ],
+    "1": [
+      "includes_class_internet_melli_admin_internet_melli_admin_handle_toggle",
+      "internet_melli",
+      "internet_melli_ajax_delete_all_data",
+      "internet_melli_internet_melli",
+      "internet_melli_internet_melli_add_sw_to_head",
+      "internet_melli_internet_melli_check_update",
+      "internet_melli_internet_melli_deactivate",
+      "internet_melli_internet_melli_enqueue_frontend_scripts",
+      "internet_melli_internet_melli_generate_sw_content",
+      "internet_melli_internet_melli_get_instance",
+      "internet_melli_internet_melli_im_download_emergency_tool",
+      "internet_melli_internet_melli_im_send_feedback",
+      "internet_melli_internet_melli_init",
+      "internet_melli_internet_melli_install_update",
+      "internet_melli_internet_melli_serve_sw_js"
+    ],
+    "2": [
+      "adminstyle_css_panel",
+      "claudemd_guidance",
+      "docsreadme_index",
+      "folderstructure_doc",
+      "js_admin_settings",
+      "js_admin_settings_backenddomainmanager",
+      "js_admin_settings_checkforupdate",
+      "js_admin_settings_domainmanager",
+      "js_admin_settings_installupdate",
+      "js_admin_settings_issitedomain",
+      "technologies_doc"
+    ],
+    "3": [
+      "includes_class_internet_melli_admin",
+      "includes_class_internet_melli_admin_internet_melli_admin",
+      "includes_class_internet_melli_admin_internet_melli_admin_add_menu_page",
+      "includes_class_internet_melli_admin_internet_melli_admin_construct",
+      "includes_class_internet_melli_admin_internet_melli_admin_enqueue_scripts",
+      "includes_class_internet_melli_admin_internet_melli_admin_enqueue_styles",
+      "includes_class_internet_melli_admin_internet_melli_admin_handle_test",
+      "includes_class_internet_melli_admin_internet_melli_admin_register_settings",
+      "includes_class_internet_melli_admin_internet_melli_admin_render_admin_page"
+    ],
+    "4": [
+      "includes_class_internet_melli_remover",
+      "includes_class_internet_melli_remover_internet_melli_remover",
+      "includes_class_internet_melli_remover_internet_melli_remover_filter_script_src",
+      "includes_class_internet_melli_remover_internet_melli_remover_filter_style_src",
+      "includes_class_internet_melli_remover_internet_melli_remover_get_blocked_domains",
+      "includes_class_internet_melli_remover_internet_melli_remover_get_host_from_url",
+      "includes_class_internet_melli_remover_internet_melli_remover_init",
+      "includes_class_internet_melli_remover_internet_melli_remover_should_block",
+      "internet_melli_internet_melli_construct"
+    ],
+    "5": [
+      "includes_class_internet_melli_updater",
+      "includes_class_internet_melli_updater_internet_melli_updater",
+      "includes_class_internet_melli_updater_internet_melli_updater_check_for_update",
+      "includes_class_internet_melli_updater_internet_melli_updater_construct",
+      "includes_class_internet_melli_updater_internet_melli_updater_delete_directory",
+      "includes_class_internet_melli_updater_internet_melli_updater_download_and_install",
+      "includes_class_internet_melli_updater_internet_melli_updater_find_correct_plugin_folder",
+      "includes_class_internet_melli_updater_internet_melli_updater_recurse_copy",
+      "includes_class_internet_melli_updater_internet_melli_updater_unzip_plugin"
+    ],
+    "6": [
+      "readmetxt_changelog"
+    ]
+  },
+  "cohesion": {
+    "0": 0.1523809523809524,
+    "1": 0.13333333333333333,
+    "2": 0.18181818181818182,
+    "3": 0.2222222222222222,
+    "4": 0.2222222222222222,
+    "5": 0.4166666666666667,
+    "6": 1.0
+  },
+  "gods": [
+    {
+      "id": "includes_class_internet_melli_admin_internet_melli_admin",
+      "label": "Internet_Melli_Admin",
+      "degree": 14
+    },
+    {
+      "id": "includes_class_internet_melli_blocker_internet_melli_blocker",
+      "label": "Internet_Melli_Blocker",
+      "degree": 13
+    },
+    {
+      "id": "includes_class_internet_melli_remover_internet_melli_remover",
+      "label": "Internet_Melli_Remover",
+      "degree": 12
+    },
+    {
+      "id": "internet_melli_internet_melli",
+      "label": "Internet_Melli",
+      "degree": 12
+    },
+    {
+      "id": "includes_class_internet_melli_updater_internet_melli_updater",
+      "label": "Internet_Melli_Updater",
+      "degree": 10
+    },
+    {
+      "id": "overview_doc",
+      "label": "Doc 01 \u2014 Overview",
+      "degree": 5
+    },
+    {
+      "id": "docsreadme_index",
+      "label": "docs/README.md \u2014 Documentation Index",
+      "degree": 5
+    },
+    {
+      "id": "internetmelli_php_entry",
+      "label": "internet-melli.php (Entry Point)",
+      "degree": 5
+    },
+    {
+      "id": "internetmelli_singleton",
+      "label": "Internet_Melli (Singleton)",
+      "degree": 5
+    },
+    {
+      "id": "technologies_doc",
+      "label": "Doc 02 \u2014 Technologies",
+      "degree": 3
+    }
+  ],
+  "surprises": [
+    {
+      "source": "README.md \u2014 Project Description",
+      "target": "Doc 01 \u2014 Overview",
+      "source_files": [
+        "README.md",
+        "docs/01-overview.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "semantically_similar_to",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; semantically similar concepts with no structural link; peripheral node `README.md \u2014 Project Description` unexpectedly reaches hub `Doc 01 \u2014 Overview`"
+    },
+    {
+      "source": "Doc 04 \u2014 Folder Structure",
+      "target": "Internet_Melli_Admin",
+      "source_files": [
+        "docs/04-folder-structure.md",
+        "includes/class-internet-melli-admin.php"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "crosses file types (code \u2194 doc); connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "Doc 01 \u2014 Overview",
+      "target": "Internet_Melli_Remover",
+      "source_files": [
+        "docs/01-overview.md",
+        "includes/class-internet-melli-remover.php"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "crosses file types (code \u2194 doc); connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "Doc 04 \u2014 Folder Structure",
+      "target": "Internet_Melli_Updater",
+      "source_files": [
+        "docs/04-folder-structure.md",
+        "includes/class-internet-melli-updater.php"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "crosses file types (code \u2194 doc); connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "Doc 01 \u2014 Overview",
+      "target": "sw.js Service Worker (generated)",
+      "source_files": [
+        "docs/01-overview.md",
+        "internet-melli.php"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "crosses file types (doc \u2194 code); connects across different repos/directories; peripheral node `sw.js Service Worker (generated)` unexpectedly reaches hub `Doc 01 \u2014 Overview`"
+    }
+  ],
+  "tokens": {
+    "input": 33159,
+    "output": 6447
+  }
+}
