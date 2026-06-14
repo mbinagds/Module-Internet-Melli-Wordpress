@@ -3,22 +3,15 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class Internet_Melli_Remover {
+class Tnet_Remover {
 
-    const OPTION_FRONTEND_DOMAINS = 'internet_melli_blocked_domains_frontend';
+    const OPTION_FRONTEND_DOMAINS = 'tnet_blocked_domains_frontend';
 
     public static function init() {
-
-        // حذف js
         add_filter( 'script_loader_src', array( __CLASS__, 'filter_script_src' ), 10, 2 );
-
-        // حذف css
         add_filter( 'style_loader_src', array( __CLASS__, 'filter_style_src' ), 10, 2 );
     }
 
-    /**
-     * گرفتن host از URL
-     */
     protected static function get_host_from_url( $url ) {
 
         if ( empty( $url ) ) {
@@ -34,9 +27,6 @@ class Internet_Melli_Remover {
         return $host;
     }
 
-    /**
-     * گرفتن لیست دامنه‌های frontend
-     */
     protected static function get_blocked_domains() {
 
         $domains = get_option(
@@ -49,9 +39,6 @@ class Internet_Melli_Remover {
         return $domains;
     }
 
-    /**
-     * بررسی اینکه دامنه باید بلاک شود
-     */
     protected static function should_block( $url ) {
 
         $host = self::get_host_from_url( $url );
@@ -76,9 +63,6 @@ class Internet_Melli_Remover {
         return false;
     }
 
-    /**
-     * فیلتر JS
-     */
     public static function filter_script_src( $src, $handle ) {
 
         if ( self::should_block( $src ) ) {
@@ -88,9 +72,6 @@ class Internet_Melli_Remover {
         return $src;
     }
 
-    /**
-     * فیلتر CSS
-     */
     public static function filter_style_src( $src, $handle ) {
 
         if ( self::should_block( $src ) ) {

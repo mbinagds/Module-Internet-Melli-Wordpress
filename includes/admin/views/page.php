@@ -1,5 +1,5 @@
 <?php if ( ! defined( 'ABSPATH' ) ) { exit; } ?>
-        <div class="internet-melli-admin-wrapper">
+        <div class="tnet-admin-wrapper">
             <!-- Header Section -->
             <?php include __DIR__ . '/header.php'; ?>
 

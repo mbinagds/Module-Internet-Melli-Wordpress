@@ -1,82 +1,74 @@
 <?php
-/**
- * Updater Class for Internet Melli Plugin
- */
-
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class Internet_Melli_Updater {
+class Tnet_Updater {
 
     private $update_url = 'http://mirror.talashnet.ir/wordpress/internet-melli/updater/update-api.php';
 
     private $current_version;
-    private $plugin_slug = 'internet-melli';
+    private $plugin_slug = 'talashnet-external-request-blocker';
 
     public function __construct($current_version) {
         $this->current_version = $current_version;
     }
 
-   public function check_for_update() {
-    // ارسال اطلاعات سایت به API
-    $query_params = http_build_query([
-        'site_url' => get_site_url(),
-        'version' => $this->current_version,
-        'slug' => $this->plugin_slug
-    ]);
-    
-    $api_url = $this->update_url . '?' . $query_params;
-    
-    $response = wp_remote_get($api_url, array(
-        'timeout'   => 15,
-        'sslverify' => false
-    ));
+    public function check_for_update() {
+        $query_params = http_build_query([
+            'site_url' => get_site_url(),
+            'version'  => $this->current_version,
+            'slug'     => $this->plugin_slug
+        ]);
 
-    if (is_wp_error($response)) {
+        $api_url = $this->update_url . '?' . $query_params;
+
+        $response = wp_remote_get($api_url, array(
+            'timeout'   => 15,
+            'sslverify' => false
+        ));
+
+        if (is_wp_error($response)) {
+            return array(
+                'status'  => 'error',
+                'message' => __('Connection error: ', 'talashnet-external-request-blocker') . $response->get_error_message()
+            );
+        }
+
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+
+        if (!$data || !isset($data['version'])) {
+            return array(
+                'status'  => 'error',
+                'message' => __('Invalid response from server.', 'talashnet-external-request-blocker')
+            );
+        }
+
+        $has_update = version_compare($data['version'], $this->current_version, '>');
+
         return array(
-            'status'  => 'error',
-            'message' => __('خطا در اتصال به سرور: ', 'internet-melli') . $response->get_error_message()
+            'status'          => 'success',
+            'has_update'      => $has_update,
+            'new_version'     => $data['version'],
+            'download_url'    => $data['download_url'] ?? '',
+            'release_notes'   => $data['release_notes'] ?? '',
+            'current_version' => $this->current_version
         );
     }
-
-    $body = wp_remote_retrieve_body($response);
-    $data = json_decode($body, true);
-
-    if (!$data || !isset($data['version'])) {
-        return array(
-            'status'  => 'error',
-            'message' => __('پاسخ نامعتبر از سرور', 'internet-melli')
-        );
-    }
-
-    $has_update = version_compare($data['version'], $this->current_version, '>');
-
-    return array(
-        'status'         => 'success',
-        'has_update'     => $has_update,
-        'new_version'    => $data['version'],
-        'download_url'   => $data['download_url'] ?? '',
-        'release_notes'  => $data['release_notes'] ?? '',
-        'current_version'=> $this->current_version
-    );
-}
-
 
     public function download_and_install($download_url) {
         if (!current_user_can('install_plugins')) {
-            return array('status' => 'error', 'message' => __('دسترسی ندارید', 'internet-melli'));
+            return array('status' => 'error', 'message' => __('You do not have permission to install plugins.', 'talashnet-external-request-blocker'));
         }
 
         if (empty($download_url)) {
-            return array('status' => 'error', 'message' => __('لینک خالی است', 'internet-melli'));
+            return array('status' => 'error', 'message' => __('Download URL is empty.', 'talashnet-external-request-blocker'));
         }
 
-        // دریافت نسخه جدید از API
         $api_response = $this->check_for_update();
         $new_version = $api_response['new_version'] ?? 'unknown';
 
-        // دانلود فایل
         $response = wp_remote_get($download_url, array(
             'timeout'   => 60,
             'sslverify' => false,
@@ -85,11 +77,11 @@ class Internet_Melli_Updater {
         ));
 
         if (is_wp_error($response)) {
-            return array('status' => 'error', 'message' => __('خطا در دانلود: ', 'internet-melli') . $response->get_error_message());
+            return array('status' => 'error', 'message' => __('Download error: ', 'talashnet-external-request-blocker') . $response->get_error_message());
         }
 
         if (wp_remote_retrieve_response_code($response) !== 200) {
-            return array('status' => 'error', 'message' => __('دانلود ناموفق', 'internet-melli'));
+            return array('status' => 'error', 'message' => __('Download failed.', 'talashnet-external-request-blocker'));
         }
 
         $download_file = WP_CONTENT_DIR . '/temp-update.zip';
@@ -97,20 +89,17 @@ class Internet_Melli_Updater {
 
         if (!file_exists($plugin_dir)) {
             @unlink($download_file);
-            return array('status' => 'error', 'message' => __('پوشه یافت نشد', 'internet-melli'));
+            return array('status' => 'error', 'message' => __('Plugin directory not found.', 'talashnet-external-request-blocker'));
         }
 
-        // بکاپ
         $backup_dir = WP_CONTENT_DIR . '/plugin-backups/' . $this->plugin_slug . '-' . date('Y-m-d-H-i-s');
         if (!is_dir(dirname($backup_dir))) {
             mkdir(dirname($backup_dir), 0755, true);
         }
         $this->recurse_copy($plugin_dir, $backup_dir);
 
-        // حذف فایل‌های قبلی
         $this->delete_directory($plugin_dir);
 
-        // استخراج
         $result = $this->unzip_plugin($download_file, $plugin_dir);
         @unlink($download_file);
 
@@ -122,10 +111,9 @@ class Internet_Melli_Updater {
 
         wp_clean_plugins_cache();
 
-        // استفاده از نسخه API به جای فایل
         return array(
             'status'      => 'success',
-            'message'     => sprintf(__('افزونه با موفقیت به نسخه %s آپدیت شد', 'internet-melli'), $new_version),
+            'message'     => sprintf(__('Plugin successfully updated to version %s.', 'talashnet-external-request-blocker'), $new_version),
             'new_version' => $new_version,
             'backup_dir'  => $backup_dir
         );
@@ -141,7 +129,7 @@ class Internet_Melli_Updater {
         WP_Filesystem();
 
         if (!is_object($wp_filesystem) || !$wp_filesystem->exists($zip_file)) {
-            return array('status' => 'error', 'message' => __('خطا در فایل سیستم', 'internet-melli'));
+            return array('status' => 'error', 'message' => __('Filesystem error.', 'talashnet-external-request-blocker'));
         }
 
         $temp_dir = WP_CONTENT_DIR . '/temp-unzip-' . time();
@@ -151,14 +139,14 @@ class Internet_Melli_Updater {
 
         if (is_wp_error($unzipresult)) {
             $this->delete_directory($temp_dir);
-            return array('status' => 'error', 'message' => __('خطا در استخراج: ', 'internet-melli') . $unzipresult->get_error_message());
+            return array('status' => 'error', 'message' => __('Extraction error: ', 'talashnet-external-request-blocker') . $unzipresult->get_error_message());
         }
 
         $source_dir = $this->find_correct_plugin_folder($temp_dir);
 
         if (!$source_dir) {
             $this->delete_directory($temp_dir);
-            return array('status' => 'error', 'message' => __('پوشه یافت نشد', 'internet-melli'));
+            return array('status' => 'error', 'message' => __('Plugin folder not found in archive.', 'talashnet-external-request-blocker'));
         }
 
         $this->recurse_copy($source_dir, $destination);
