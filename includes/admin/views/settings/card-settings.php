@@ -152,9 +152,6 @@
                                         </div>
 
 
-                                        <input type="hidden" id="tnet_blocked_domains_frontend"
-                                            name="tnet_blocked_domains_frontend"
-                                            value="<?php echo esc_attr($blocked_domains); ?>">
                                     </div>
                                 </div>
 

@@ -103,7 +103,7 @@ class Tnet_Updater {
         $result = $this->unzip_plugin($download_file, $plugin_dir);
         @unlink($download_file);
 
-        if (!$result['status']) {
+        if ($result['status'] !== 'success') {
             $this->delete_directory($plugin_dir);
             $this->recurse_copy($backup_dir, $plugin_dir);
             return $result;

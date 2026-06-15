@@ -28,8 +28,10 @@ class Tnet_Admin_Ajax
         }
 
         if (isset($_POST['blocked_domains_backend'])) {
-            $backend_domains_backend = sanitize_text_field(wp_unslash($_POST['blocked_domains_backend']));
-            update_option('tnet_blocked_domains_backend', $backend_domains_backend);
+            $raw_backend = wp_unslash($_POST['blocked_domains_backend']);
+            $decoded_backend = json_decode($raw_backend, true);
+            $safe_backend = is_array($decoded_backend) ? wp_json_encode($decoded_backend) : '[]';
+            update_option('tnet_blocked_domains_backend', $safe_backend);
         }
 
         $sw_file = ABSPATH . 'sw.js';
