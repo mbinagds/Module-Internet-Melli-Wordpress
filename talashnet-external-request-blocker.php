@@ -53,7 +53,6 @@ class Tnet_Plugin
         add_action('admin_enqueue_scripts', [$this->admin, 'enqueue_scripts']);
 
         add_action('wp_enqueue_scripts', [$this, 'enqueue_frontend_scripts']);
-        add_action('wp_head', array($this, 'add_sw_to_head'), 1);
         add_action('wp_ajax_tnet_send_feedback', array($this, 'tnet_send_feedback'));
         add_action('wp_ajax_nopriv_tnet_send_feedback', array($this, 'tnet_send_feedback'));
 
@@ -125,7 +124,40 @@ class Tnet_Plugin
         exit;
     }
 
-    public function enqueue_frontend_scripts() {}
+    public function enqueue_frontend_scripts()
+    {
+        $enabled = (int) get_option('tnet_enabled', 0);
+
+        wp_register_script('tnet-sw-handler', false, [], TNET_VERSION, false);
+
+        if (!$enabled) {
+            $js = "if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (var i = 0; i < registrations.length; i++) {
+            registrations[i].unregister();
+        }
+    });
+}";
+        } else {
+            $sw_url = home_url('sw.js?ver=' . TNET_VERSION);
+            $js     = "if ('serviceWorker' in navigator) {
+    var isControlled = navigator.serviceWorker.controller !== null;
+    navigator.serviceWorker.register('" . esc_js($sw_url) . "', { scope: '/' })
+        .then(function(registration) { return navigator.serviceWorker.ready; })
+        .then(function(registration) {
+            if (!navigator.serviceWorker.controller || !isControlled) {
+                window.location.reload();
+            }
+        })
+        .catch(function(err) {
+            console.log('TalashNet ERB SW registration failed:', err);
+        });
+}";
+        }
+
+        wp_add_inline_script('tnet-sw-handler', $js);
+        wp_enqueue_script('tnet-sw-handler');
+    }
 
     public function tnet_send_feedback()
     {
@@ -170,52 +202,6 @@ class Tnet_Plugin
                 'message' => __('Feedback submission failed.', 'talashnet-external-request-blocker') . ' (' . $status . ')'
             ));
         }
-    }
-
-    public function add_sw_to_head()
-    {
-        $enabled = (int) get_option('tnet_enabled', 0);
-
-        if (!$enabled) {
-?>
-            <script>
-                if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                        for (let registration of registrations) {
-                            registration.unregister();
-                        }
-                    });
-                }
-            </script>
-        <?php
-            return;
-        }
-
-        $version = TNET_VERSION;
-        $sw_url  = home_url('sw.js?ver=' . $version);
-
-        ?>
-        <script>
-            if ('serviceWorker' in navigator) {
-                var isControlled = navigator.serviceWorker.controller !== null;
-
-                navigator.serviceWorker.register('<?php echo esc_js($sw_url); ?>', {
-                        scope: '/'
-                    })
-                    .then(function(registration) {
-                        return navigator.serviceWorker.ready;
-                    })
-                    .then(function(registration) {
-                        if (!navigator.serviceWorker.controller || !isControlled) {
-                            window.location.reload();
-                        }
-                    })
-                    .catch(function(err) {
-                        console.log('TalashNet ERB SW registration failed:', err);
-                    });
-            }
-        </script>
-<?php
     }
 
     public static function generate_sw_content()
