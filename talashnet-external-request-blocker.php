@@ -163,13 +163,13 @@ class Tnet_Plugin
     {
         if (
             !isset($_POST['tnet_feedback_nonce']) ||
-            !wp_verify_nonce($_POST['tnet_feedback_nonce'], 'tnet_nonce')
+            !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['tnet_feedback_nonce'])), 'tnet_nonce')
         ) {
             wp_send_json_error(array('message' => __('Nonce verification failed.', 'talashnet-external-request-blocker')));
         }
 
-        $text = isset($_POST['text']) ? sanitize_textarea_field($_POST['text']) : '';
-        $user = isset($_POST['user']) ? sanitize_text_field($_POST['user']) : '';
+        $text = isset($_POST['text']) ? sanitize_textarea_field(wp_unslash($_POST['text'])) : '';
+        $user = isset($_POST['user']) ? sanitize_text_field(wp_unslash($_POST['user'])) : '';
 
         if (empty($text)) {
             wp_send_json_error(array('message' => __('Feedback text is empty.', 'talashnet-external-request-blocker')));
@@ -248,7 +248,7 @@ self.addEventListener('fetch', function(event) {
 
     public function serve_sw_js()
     {
-        if (isset($_GET['sw']) && $_GET['sw'] === 'talashnet-external-request-blocker') {
+        if (isset($_GET['sw']) && sanitize_key(wp_unslash($_GET['sw'])) === 'talashnet-external-request-blocker') {
             header('Content-Type: application/javascript; charset=utf-8');
             echo self::generate_sw_content();
             exit;
@@ -272,7 +272,7 @@ self.addEventListener('fetch', function(event) {
 
 function tnet_check_update()
 {
-    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'tnet_nonce')) {
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'tnet_nonce')) {
         wp_send_json(array(
             'status'  => 'error',
             'message' => __('Security error.', 'talashnet-external-request-blocker')
@@ -297,7 +297,7 @@ function tnet_check_update()
 
 function tnet_install_update()
 {
-    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'tnet_nonce')) {
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'tnet_nonce')) {
         wp_send_json(array(
             'status'  => 'error',
             'message' => __('Security error.', 'talashnet-external-request-blocker')
@@ -311,7 +311,7 @@ function tnet_install_update()
         ));
     }
 
-    $download_url = isset($_POST['download_url']) ? esc_url_raw($_POST['download_url']) : '';
+    $download_url = isset($_POST['download_url']) ? esc_url_raw(wp_unslash($_POST['download_url'])) : '';
 
     if (empty($download_url)) {
         wp_send_json(array(
@@ -338,7 +338,7 @@ function tnet_delete_all_data()
         ));
     }
 
-    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'tnet_nonce')) {
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'tnet_nonce')) {
         wp_send_json_error(array(
             'message' => __('Invalid security token.', 'talashnet-external-request-blocker')
         ));

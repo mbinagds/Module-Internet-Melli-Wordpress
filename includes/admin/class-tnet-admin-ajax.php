@@ -13,13 +13,13 @@ class Tnet_Admin_Ajax
             wp_send_json_error(array('message' => __('Unauthorized access.', 'talashnet-external-request-blocker')));
         }
 
-        $enabled = isset($_POST['enabled']) ? intval($_POST['enabled']) : 0;
+        $enabled = isset($_POST['enabled']) ? absint(wp_unslash($_POST['enabled'])) : 0;
         update_option('tnet_enabled', $enabled);
 
-        $backend_enabled = isset($_POST['backend_enabled']) ? intval($_POST['backend_enabled']) : 0;
+        $backend_enabled = isset($_POST['backend_enabled']) ? absint(wp_unslash($_POST['backend_enabled'])) : 0;
         update_option('tnet_backend_enabled', $backend_enabled);
 
-        $sw_guarantee = isset($_POST['sw_guarantee']) ? intval($_POST['sw_guarantee']) : 0;
+        $sw_guarantee = isset($_POST['sw_guarantee']) ? absint(wp_unslash($_POST['sw_guarantee'])) : 0;
         update_option('tnet_sw_guarantee', $sw_guarantee);
 
         if (isset($_POST['blocked_domains_frontend'])) {

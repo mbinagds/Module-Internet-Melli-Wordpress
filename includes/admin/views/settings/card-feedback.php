@@ -19,7 +19,7 @@
 
                                     <input type="hidden"
                                         name="user"
-                                        value="<?php echo esc_attr($_SERVER['HTTP_HOST']); ?>">
+                                        value="<?php echo esc_attr(sanitize_text_field(wp_unslash($_SERVER['HTTP_HOST']))); ?>">
 
                                     <div class="im-feedback-field">
                                         <label for="im-feedback-text">

@@ -14,7 +14,7 @@ class Tnet_Admin_Page
 
     public function render()
     {
-        $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'settings';
+        $active_tab = isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : 'settings';
         $enabled    = get_option('tnet_enabled', 0);
         $backend_enabled = get_option('tnet_backend_enabled', 1);
         $sw_guarantee    = get_option('tnet_sw_guarantee', 0);

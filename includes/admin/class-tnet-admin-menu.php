@@ -41,7 +41,7 @@ class Tnet_Admin_Menu
         add_filter('submenu_file', function ($submenu_file) {
             global $plugin_page;
             if ($plugin_page == 'talashnet-external-request-blocker') {
-                $tab = isset($_GET['tab']) ? $_GET['tab'] : 'settings';
+                $tab = isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : 'settings';
                 if ($tab == 'active-plugins') {
                     return 'talashnet-external-request-blocker&tab=active-plugins';
                 }
