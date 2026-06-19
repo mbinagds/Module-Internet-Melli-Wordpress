@@ -28,9 +28,22 @@ class Tnet_Admin_Ajax
         }
 
         if (isset($_POST['blocked_domains_backend'])) {
-            $raw_backend = wp_unslash($_POST['blocked_domains_backend']);
+            $raw_backend    = wp_unslash($_POST['blocked_domains_backend']);
             $decoded_backend = json_decode($raw_backend, true);
-            $safe_backend = is_array($decoded_backend) ? wp_json_encode($decoded_backend) : '[]';
+            if (is_array($decoded_backend)) {
+                $sanitized_backend = array();
+                foreach ($decoded_backend as $item) {
+                    if (is_array($item)) {
+                        $sanitized_backend[] = array(
+                            'domain'  => sanitize_text_field($item['domain'] ?? ''),
+                            'enabled' => isset($item['enabled']) ? (bool) $item['enabled'] : true,
+                        );
+                    }
+                }
+                $safe_backend = wp_json_encode($sanitized_backend);
+            } else {
+                $safe_backend = '[]';
+            }
             update_option('tnet_blocked_domains_backend', $safe_backend);
         }
 

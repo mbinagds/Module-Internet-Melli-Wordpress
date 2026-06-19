@@ -19,14 +19,14 @@
                                     <li>
                                         <span class="im-info-label"><?php echo esc_html__('وضعیت مسدودکننده بک اند', 'talashnet-external-request-blocker'); ?></span>
                                         <span class="im-info-value im-info-activity">
-                                            <span class="im-status-dot im-status-<?php echo $backend_enabled ? 'active' : 'inactive'; ?>"></span>
+                                            <span class="im-status-dot im-status-<?php echo esc_attr($backend_enabled ? 'active' : 'inactive'); ?>"></span>
                                             <?php echo $backend_enabled ? esc_html__('فعال', 'talashnet-external-request-blocker') : esc_html__('غیرفعال', 'talashnet-external-request-blocker'); ?>
                                         </span>
                                     </li>
                                     <li>
                                         <span class="im-info-label"><?php echo esc_html__('وضعیت مسدودکننده فرانت اند', 'talashnet-external-request-blocker'); ?></span>
                                         <span class="im-info-value im-info-activity">
-                                            <span class="im-status-dot im-status-<?php echo $enabled ? 'active' : 'inactive'; ?>"></span>
+                                            <span class="im-status-dot im-status-<?php echo esc_attr($enabled ? 'active' : 'inactive'); ?>"></span>
                                             <?php echo $enabled ? esc_html__('فعال', 'talashnet-external-request-blocker') : esc_html__('غیرفعال', 'talashnet-external-request-blocker'); ?>
                                         </span>
                                     </li>

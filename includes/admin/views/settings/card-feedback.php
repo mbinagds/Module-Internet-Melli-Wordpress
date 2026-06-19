@@ -15,7 +15,7 @@
                                     <input type="hidden"
                                         id="tnet_feedback_nonce"
                                         name="tnet_feedback_nonce"
-                                        value="<?php echo wp_create_nonce('tnet_nonce'); ?>">
+                                        value="<?php echo esc_attr(wp_create_nonce('tnet_nonce')); ?>">
 
                                     <input type="hidden"
                                         name="user"
